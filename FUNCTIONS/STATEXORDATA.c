@@ -26,7 +26,7 @@ void StateXORBytes(uint64_t *state, const unsigned char *data, unsigned int offs
 
     // Carica lo state
 
-    printf("--STATEXORBYTE with offset: %d\n", offset);
+    //printf("--STATEXORBYTE with offset: %d\n", offset);
 
     uint8_t *new_state = (uint8_t*)state;
 
@@ -162,33 +162,33 @@ void StateXORBytes(uint64_t *state, const unsigned char *data, unsigned int offs
     //printf("\n----------\n");
 
     
-    printf("---STATE PRE\n");
+    //printf("---STATE PRE\n");
     for(int i = 0; i < 25; i++){
-        printf("-----IMPL - %d: %llu\n", i, state[i]);
+        //printf("-----IMPL - %d: %llu\n", i, state[i]);
     }
-    printf("---DATA\n");
+    //printf("---DATA\n");
     for(int i = 0; i < length; i++){
-        printf("-----data[%d]: %d\n", i, *(data + i));
+        //printf("-----data[%d]: %d\n", i, *(data + i));
     }
     // XOR AND SAVE RESULT
     for(int i = 0; i < vec_quantity; i++){
 
         // PRINT ALL STATE
-        /*printf("STATE PRE\n");
+        /*//printf("STATE PRE\n");
         for (int j = 0; j < vec_quantity; j++){
-            printf("PRE: %llu %llu %llu %llu\n",_mm256_extract_epi64(_state_window[j], 0), _mm256_extract_epi64(_state_window[j], 1), _mm256_extract_epi64(_state_window[j], 2), _mm256_extract_epi64(_state_window[j], 3));
+            //printf("PRE: %llu %llu %llu %llu\n",_mm256_extract_epi64(_state_window[j], 0), _mm256_extract_epi64(_state_window[j], 1), _mm256_extract_epi64(_state_window[j], 2), _mm256_extract_epi64(_state_window[j], 3));
         }
-        printf("DATA\n");
+        //printf("DATA\n");
         for (int j = 0; j < vec_quantity; j++){
-            printf("%llu %llu %llu %llu\n",_mm256_extract_epi64(_data_window[j], 0), _mm256_extract_epi64(_data_window[j], 1), _mm256_extract_epi64(_data_window[j], 2), _mm256_extract_epi64(_data_window[j], 3));
+            //printf("%llu %llu %llu %llu\n",_mm256_extract_epi64(_data_window[j], 0), _mm256_extract_epi64(_data_window[j], 1), _mm256_extract_epi64(_data_window[j], 2), _mm256_extract_epi64(_data_window[j], 3));
         }*/
         for(int j = 0; j < 32; j++){
-            printf("xorring %d with %d\n", getElement_8_2(_state_window[i], 31-j), getElement_8_2(_data_window[i], 31-j));
+            //printf("xorring %d with %d\n", getElement_8_2(_state_window[i], 31-j), getElement_8_2(_data_window[i], 31-j));
         }
         _state_window[i] = _mm256_xor_si256(_state_window[i], _data_window[i]);
-        /*printf("STATE POST\n");
+        /*//printf("STATE POST\n");
         for (int j = 0; j < vec_quantity; j++){
-            printf("POST: %llu %llu %llu %llu\n",_mm256_extract_epi64(_state_window[j], 0), _mm256_extract_epi64(_state_window[j], 1), _mm256_extract_epi64(_state_window[j], 2), _mm256_extract_epi64(_state_window[j], 3));
+            //printf("POST: %llu %llu %llu %llu\n",_mm256_extract_epi64(_state_window[j], 0), _mm256_extract_epi64(_state_window[j], 1), _mm256_extract_epi64(_state_window[j], 2), _mm256_extract_epi64(_state_window[j], 3));
         }*/
         /*for (int j = 0; j < 32; j++){
             *(new_state + offset + i*32 + j) = getElement_8_2(_state_window[i], 31-j);
@@ -196,15 +196,15 @@ void StateXORBytes(uint64_t *state, const unsigned char *data, unsigned int offs
         //if it goes into seg fault use this one instead/
             if (i < vec_quantity - 1 || usage_of_last_vector == 0){
                 for (int j = 0; j < 32; j++){
-                    printf("-----XORRING %d into state[%d], byte[%d]. ", getElement_8_2(_data_window[i], 31-j), (offset + i*32 + j) / 8, (offset + i*32 + j) % 8);
+                    //printf("-----XORRING %d into state[%d], byte[%d]. ", getElement_8_2(_data_window[i], 31-j), (offset + i*32 + j) / 8, (offset + i*32 + j) % 8);
                     *(new_state + offset + i*32 + j) = getElement_8_2(_state_window[i], 31-j);
-                    printf("-----RESULT: %llu\n", state[(offset + i*32 + j) / 8]);
+                    //printf("-----RESULT: %llu\n", state[(offset + i*32 + j) / 8]);
                 }
             } else {
                 for (int j = 0; j < usage_of_last_vector; j++){
-                    printf("-----XORRING %d into state[%d], byte[%d]. ", getElement_8_2(_data_window[i], 31-j), (offset + i*32 + j) / 8, (offset + i*32 + j) % 8);
+                    //printf("-----XORRING %d into state[%d], byte[%d]. ", getElement_8_2(_data_window[i], 31-j), (offset + i*32 + j) / 8, (offset + i*32 + j) % 8);
                     *(new_state + offset + i*32 + j) = getElement_8_2(_state_window[i], 31-j);
-                    printf("-----RESULT: %llu\n", state[(offset + i*32 + j) / 8]);
+                    //printf("-----RESULT: %llu\n", state[(offset + i*32 + j) / 8]);
                 }
             }
 
@@ -212,9 +212,9 @@ void StateXORBytes(uint64_t *state, const unsigned char *data, unsigned int offs
 
     }
     // print state
-    printf("---STATE POST\n");
+    //printf("---STATE POST\n");
     for(int i = 0; i < 25; i++){
-        printf("-----IMPL - %d: %llu\n", i, state[i]);
+        //printf("-----IMPL - %d: %llu\n", i, state[i]);
     }
 
 }

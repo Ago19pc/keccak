@@ -110,7 +110,7 @@ static void keccak_inc_init(uint64_t *s_inc)
 static void keccak_inc_absorb(uint64_t *s_inc, uint32_t r, const uint8_t *m,
                               size_t mlen)
 {
-   printf("-Absorbing\n");
+   //printf("-Absorbing\n");
    /* Recall that s_inc[25] is the non-absorbed bytes xored into the state */
    while (mlen + s_inc[25] >= r) {
 
@@ -185,14 +185,14 @@ static void keccak_inc_squeeze(uint8_t *h, size_t outlen,
 
    /* Then squeeze the remaining necessary blocks */
    while (outlen > 0) {
-      printf("Squeezing pre-permutation\n");
+      //printf("Squeezing pre-permutation\n");
       for (int i = 0; i < 25; i++){
-        printf("IMPL - %d: %llu\n", i, s_inc[i]);
+        //printf("IMPL - %d: %llu\n", i, s_inc[i]);
       }
       StatePermute(s_inc);
-      printf("Squeezing post-permutation\n");
+      //printf("Squeezing post-permutation\n");
       for (int i = 0; i < 25; i++){
-        printf("IMPL - %d: %llu\n", i, s_inc[i]);
+        //printf("IMPL - %d: %llu\n", i, s_inc[i]);
       }
 
       if(outlen < r) {
@@ -368,13 +368,13 @@ void sha3_256(uint8_t *output, const uint8_t *input, size_t inlen)
 
    /* Absorb input */
    keccak_inc_absorb(state.ctx, SHA3_256_RATE, input, inlen);
-   printf("Absorbed\n");
+   //printf("Absorbed\n");
    keccak_inc_finalize(state.ctx, SHA3_256_RATE, 0x06);
-   printf("Finalized\n");
+   //printf("Finalized\n");
 
    /* Squeeze output */
    keccak_inc_squeeze(output, 32, state.ctx, SHA3_256_RATE);
-   printf("Squeezed\n");
+   //printf("Squeezed\n");
 }
 void sha3_256_inc_init(sha3_256incctx *state)
 {
