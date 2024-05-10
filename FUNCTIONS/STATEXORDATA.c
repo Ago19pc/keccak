@@ -36,15 +36,59 @@ void StateXORBytes(uint64_t *state, const unsigned char *data, unsigned int offs
     //printf("Length: %d, vec_quantity: %d\n", length, vec_quantity);
     __m256i _state_window[vec_quantity];
     for (int i = 0; i < vec_quantity; i++){
-        if (i < vec_quantity - 1){
-            _state_window[i] = _mm256_loadu_si256((__m256i*)(new_state + offset + i*32));
-        } else {
-            uint8_t last_state_vec[32] = {0};
-            for (int j = 0; j < usage_of_last_vector; j++){
-                last_state_vec[j] = *(new_state + offset + i*32 + j);
+        uint8_t state_vec[32] = {0};
+        if (i < vec_quantity - 1 || usage_of_last_vector == 0 ){
+            for(int j = 0; j < 32; j++){
+                state_vec[j] = *(new_state + offset + i*32 + j);
             }
-            _state_window[i] = _mm256_loadu_si256((__m256i*)last_state_vec);
+            //_state_window[i] = _mm256_loadu_si256((__m256i*)(new_state + offset + i*32));
+        } else {
+            //uint8_t last_state_vec[32] = {0};
+            for (int j = 0; j < usage_of_last_vector; j++){
+                //last_state_vec[j] = *(new_state + offset + i*32 + j);
+                state_vec[j] = *(new_state + offset + i*32 + j);
+            }
+            //_state_window[i] = _mm256_loadu_si256((__m256i*)last_state_vec);
         }
+
+        for(int j = 0; j < 4; j++){
+            uint8_t tmp = state_vec[j];
+            //printf("tmp: %d\n", tmp);
+            state_vec[j] = state_vec[7-j];
+            //printf("new data_vec[j]: %d\n", data_vec[j]);
+            state_vec[7-j] = tmp;
+            //printf("new data_vec[7-j]: %d\n", data_vec[7-j]);
+        }
+        //printf("8 to 15 swap\n");
+        for(int j = 8; j < 12; j++){
+            uint8_t tmp = state_vec[j];
+            //printf("tmp: %d\n", tmp);
+            state_vec[j] = state_vec[23-j];
+            //printf("new data_vec[j]: %d\n", data_vec[j]);
+            state_vec[23-j] = tmp;
+            //printf("new data_vec[23-j]: %d\n", data_vec[23-j]);
+        }
+        //printf("16 to 23 swap\n");
+        for(int j = 16; j < 20; j++){
+            uint8_t tmp = state_vec[j];
+            //printf("tmp: %d\n", tmp);
+            
+            state_vec[j] = state_vec[39-j];
+            //printf("new data_vec[j]: %d\n", data_vec[j]);
+            state_vec[39-j] = tmp;
+            //printf("new data_vec[39-j]: %d\n", data_vec[39-j]);
+        }
+        //printf("24 to 31 swap\n");
+        for(int j = 24; j < 28; j++){
+            uint8_t tmp = state_vec[j];
+            //printf("tmp: %d\n", tmp);
+            state_vec[j] = state_vec[55-j];
+            //printf("new data_vec[j]: %d\n", data_vec[j]);
+            state_vec[55-j] = tmp;
+            //printf("new data_vec[55-j]: %d\n", data_vec[55-j]);
+        }
+
+        _state_window[i] = _mm256_loadu_si256((__m256i*)state_vec);
     } 
 
     // Carica data
@@ -68,6 +112,7 @@ void StateXORBytes(uint64_t *state, const unsigned char *data, unsigned int offs
         //}
         //printf("\nEND CREATION DATA VEC\n");
         //printf("0 to 7 swap\n");
+        
         for(int j = 0; j < 4; j++){
             uint8_t tmp = data_vec[j];
             //printf("tmp: %d\n", tmp);
@@ -109,6 +154,8 @@ void StateXORBytes(uint64_t *state, const unsigned char *data, unsigned int offs
         for(int j = 0; j < 32; j++){
             //printf("%d ", data_vec[j]);
         }
+        
+
         _data_window[i] = _mm256_loadu_si256((__m256i*)data_vec);
     }
     
