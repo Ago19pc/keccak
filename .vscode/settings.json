@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "stdlib.h": "c",
+        "stateextract": "c",
+        "fips": "c",
+        "keccakf1600.h": "c",
+        "fips202.h": "c",
+        "type_traits": "c"
+    }
+}
