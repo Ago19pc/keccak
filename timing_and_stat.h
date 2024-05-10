@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#if (defined HIGH_PERFORMANCE_X86_64)
+//#if (defined HIGH_PERFORMANCE_X86_64)
 static inline
 uint64_t x86_64_rtdsc(void) {
   unsigned long long result;
@@ -20,7 +20,7 @@ uint64_t x86_64_rtdsc(void) {
         : "%rcx", "%rdx");
   return result;
 }
-#endif
+//#endif
 
 typedef struct {
      long double mean;
@@ -33,17 +33,21 @@ void welford_init(welford_t* state){
     state->mean = 0.0;
     state->M2 = 0.0;
     state->count = 0;
+    printf("------mean: %f, M2: %f, count: %ld\n", state->mean, state->M2, state->count);
     return;
 }
 
-static inline
+//static inline
 void welford_update(welford_t* state, long double sample){
     long double delta, delta2;
     state->count = state->count + 1;
     delta = sample - state->mean;
+    printf("[UPDATE] delta %ld = %ld - %ld  sample - media\n", delta, sample, state->mean);
     state->mean += delta / (long double)(state->count);
     delta2 = sample - state->mean;
     state->M2 += delta * delta2;
+     
+    printf("[UPDATE] mean: %f, M2: %f, count: %ld\n", state->mean, state->M2, state->count);
 }
 
 static inline
@@ -60,10 +64,10 @@ double welch_t_statistic(const welford_t state1,
 }
 
 static inline
-void welford_print(const welford_t state){
+void welford_print(const welford_t* state){
      printf("%.2Lf,%.2Lf",
-              state.mean,
-              sqrtl(state.M2/(long double)(state.count-1)));
+              state->mean,
+              sqrtl(state->M2/(long double)(state->count-1)));
 }
 
 static inline
