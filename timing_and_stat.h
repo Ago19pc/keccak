@@ -33,7 +33,7 @@ void welford_init(welford_t* state){
     state->mean = 0.0;
     state->M2 = 0.0;
     state->count = 0;
-    printf("------mean: %f, M2: %f, count: %ld\n", state->mean, state->M2, state->count);
+    //printf("------ [WLFORD INIT] mean: %f, M2: %f, count: %ld\n", state->mean, state->M2, state->count);
     return;
 }
 
@@ -42,12 +42,12 @@ void welford_update(welford_t* state, long double sample){
     long double delta, delta2;
     state->count = state->count + 1;
     delta = sample - state->mean;
-    printf("[UPDATE] delta %ld = %ld - %ld  sample - media\n", delta, sample, state->mean);
+    //printf("[WELFORD UPDATE] delta %ld = %ld - %ld  sample - media\n", delta, sample, state->mean);
     state->mean += delta / (long double)(state->count);
     delta2 = sample - state->mean;
     state->M2 += delta * delta2;
      
-    printf("[UPDATE] mean: %f, M2: %f, count: %ld\n", state->mean, state->M2, state->count);
+    //printf("[WELFORD UPDATE] mean: %f, M2: %f, count: %ld\n", state->mean, state->M2, state->count);
 }
 
 static inline
