@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <time.h>
+
 
 long getMicrotime(){
 	struct timeval currentTime;
@@ -168,21 +168,18 @@ int main () {
         printf("%x", input[i]);
     }
     */
-    clock_t start = clock();
-    welford_t* welford = malloc(sizeof(welford_t));
-    welford_init(welford);
+
+    welford_t welford;
+    welford_init(&welford);
     for (int j = 0; j < 100; j++){
         uint64_t start = x86_64_rtdsc();
         sha3_512(output, input, len/8);
         uint64_t end = x86_64_rtdsc();
-        //printf("#cicli: %ld\n", end - start); 
-        welford_update(welford, end - start);  
+        printf("#cicli/byte: %lld\n",(end - start)/(len/8)); 
+        welford_update(&welford,(long double) (end - start)/(len/8));  
         
     }
-    clock_t end = clock();
-    double time = (double)(end - start) / CLOCKS_PER_SEC;
-    printf("Time: %f\n", time);
-    
+
     welford_print(welford);
     printf("\n");
 

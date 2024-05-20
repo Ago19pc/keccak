@@ -5,7 +5,6 @@
         "fips": "c",
         "keccakf1600.h": "c",
         "fips202.h": "c",
-        "type_traits": "c",
-        "timing_and_stat.h": "c"
+        "type_traits": "c"
     }
 }
