@@ -76,34 +76,34 @@ void KeccakF1600_StateExtractBytes(uint64_t *state, unsigned char *data,
 void KeccakF1600_StateXORBytes(uint64_t *state, const unsigned char *data,
                                unsigned int offset, unsigned int length)
 {
-   printf("--XORRING with offset: %d\n", offset);
-   printf("---PRE XOR STATE:\n");
-   for (int i = 0; i < 25; i++){
-         printf("-----REF - %d: %llu\n", i, state[i]);
-      }
-   printf("---DATA:\n");
-   for (int i = 0; i < length; i++){
-      printf("-----REF - %d: %d\n", i, data[i]);
-   }
+   //printf("--XORRING with offset: %d\n", offset);
+   //printf("---PRE XOR STATE:\n");
+   //for (int i = 0; i < 25; i++){
+         //printf("-----REF - %d: %llu\n", i, state[i]);
+   //}
+   //printf("---DATA:\n");
+   //for (int i = 0; i < length; i++){
+      //printf("-----REF - %d: %d\n", i, data[i]);
+   //}
    unsigned int i;
    for(i = 0; i < length; i++) {
       //printf("xorring %d with %d", data[i], state[(offset + i) >> 3] >> (8 * ((offset + i) & 0x07)));
-      printf("-----XORRING byte number %d of data (%d) into state[%d], byte %d. ", i, data[i], (offset + i) >> 3, 8-((8 * ((offset + i) & 0x07)/8)));
-      printf("-----XOR %d ^ %d\n", (uint64_t)data[i] << (8 * ((offset + i) & 0x07)), state[(offset + i) >> 3]);
+      //printf("-----XORRING byte number %d of data (%d) into state[%d], byte %d. ", i, data[i], (offset + i) >> 3, 8-((8 * ((offset + i) & 0x07)/8)));
+      //printf("-----XOR %d ^ %d\n", (uint64_t)data[i] << (8 * ((offset + i) & 0x07)), state[(offset + i) >> 3]);
       state[(offset + i) >> 3] ^= (uint64_t)data[i] << (8 * ((offset + i) & 0x07));
-      printf("Result: %llu\n", state[(offset + i) >> 3]);
+      //printf("Result: %llu\n", state[(offset + i) >> 3]);
    }
-   printf("---POST STATE:\n");
+   //printf("---POST STATE:\n");
    // print state
-   for (int j = 0; j < 25; j++){
-      printf("-----REF - %d: %llu\n", j, state[j]);
-   }
+   //for (int j = 0; j < 25; j++){
+      //printf("-----REF - %d: %llu\n", j, state[j]);
+   //}
    
 }
 
 void KeccakF1600_StatePermute(uint64_t *state)
 {
-   printf("--Permuting");
+   //printf("--Permuting");
    int round;
 
    uint64_t Aba, Abe, Abi, Abo, Abu;

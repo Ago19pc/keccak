@@ -27,6 +27,8 @@ __m256i _setElement_64 (__m256i src, uint8_t index, uint64_t value) {
         case 3:
             mask = 0b00001000;
     }
+
+    
     __m256i temp = _mm256_set1_epi64x(value);
 
     return _mm256_mask_blend_epi64(mask, src, temp);

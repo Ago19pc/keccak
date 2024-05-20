@@ -2,7 +2,6 @@
 #include "STATEXORDATA.c"
 #include "STATEEXTRACT.c"
 #include "FIPS.c"
-#include <sys/time.h>
 #include "../timing_and_stat.h"
 
 #include <stdio.h>
@@ -10,11 +9,6 @@
 #include <stdlib.h>
 
 
-long getMicrotime(){
-	struct timeval currentTime;
-	gettimeofday(&currentTime, NULL);
-	return currentTime.tv_sec * (int)1e6 + currentTime.tv_usec;
-}
 
 uint8_t hexToInt(char hex){
     switch(hex){
@@ -164,10 +158,6 @@ int main () {
         correspondingByte += hexToInt(second);
         input[i] = correspondingByte;
     }
-    /*for (int i = 0; i < len/8; i++){
-        printf("%x", input[i]);
-    }
-    */
 
     welford_t welford;
     welford_init(&welford);
