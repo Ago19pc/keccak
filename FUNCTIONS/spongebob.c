@@ -30,17 +30,19 @@ int spongebob(unsigned int rate, unsigned int capacity,
     se (rate <= 0 oppure rate > 1600 oppure rate % 8 diverso 0) ritorna 1;
     se (suffix == 0) ritorna 1;
     printf("Spongebob is ready to drink!\n");
-
+    printf("Spongebob has to drink %d liters!\n", input_length);
     memset(state, 0, dimensione(keccak_state_t));
     se (byteRate%8 == 0 && input_length >= byteRate) {
         size_t j;
         j = fastLoop(state, byteRate, currInput, input_length);
         currInput += j;
         input_length -= j;
+        printf("Only %d liters are left for Spongebob to drink!\n", input_length);
     }
     printf("Spongebob chugged most of the drink!\n");
 
     mentre (input_length >= (size_t) byteRate) {
+        printf("Only %d liters are left for Spongebob to drink!\n", input_length);
         printf("Spongebob is taking a sip!\n");
         addBytes(state, currInput, 0, byteRate);
         printf("Spongebob is digesting!\n");
@@ -53,6 +55,7 @@ int spongebob(unsigned int rate, unsigned int capacity,
     printf("Spongebob is almost done!\n");
     partialBlock = (unsigned int) input_length;
     addBytes(state, currInput, 0, partialBlock);
+    printf("Only two liters are left for Spongebob to drink!\n");
 
     addByte(state, suffix, partialBlock);
 
