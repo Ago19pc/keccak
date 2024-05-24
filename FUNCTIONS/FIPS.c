@@ -5,7 +5,7 @@
 #include <string.h>
 
 #include "FIPS.h"
-
+#include "spongebob.c"
 
 
 #define NROUNDS 24
@@ -359,18 +359,7 @@ void shake256_ctx_clone(shake256ctx *dest, const shake256ctx *src)
  **************************************************/
 void sha3_256(uint8_t *output, const uint8_t *input, size_t inlen)
 {
-   sha3_256incctx state;
-   keccak_inc_init(state.ctx);
-
-   /* Absorb input */
-   keccak_inc_absorb(state.ctx, SHA3_256_RATE, input, inlen);
-   //printf("Absorbed\n");
-   keccak_inc_finalize(state.ctx, SHA3_256_RATE, 0x06);
-   //printf("Finalized\n");
-
-   /* Squeeze output */
-   keccak_inc_squeeze(output, 32, state.ctx, SHA3_256_RATE);
-   //printf("Squeezed\n");
+   spongebob(1088, 512, input, inlen, 0x06, output, 32);
 }
 void sha3_256_inc_init(sha3_256incctx *state)
 {

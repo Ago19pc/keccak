@@ -1,7 +1,4 @@
-#include "STATEPERMUTE.c"
-#include "STATEXORDATA.c"
-#include "STATEEXTRACT.c"
-#include "FIPS.c"
+#include "spongebob.c"
 #include "../timing_and_stat.h"
 
 #include <stdio.h>
@@ -143,7 +140,10 @@ char* byteToHex(uint8_t byte){
     return hex;
 }
 
-
+void sha3_256(uint8_t *output, const uint8_t *input, size_t inlen)
+{
+   spongebob(1088, 512, input, inlen, 0x06, output, 32);
+}
 
 int main () {
     size_t len = 32768;
@@ -161,9 +161,9 @@ int main () {
 
     welford_t welford;
     welford_init(&welford);
-    for (int j = 0; j < 100; j++){
+    for (int j = 0; j < 1; j++){
         uint64_t start = x86_64_rtdsc();
-        sha3_512(output, input, len/8);
+        sha3_256(output, input, len/8);
         uint64_t end = x86_64_rtdsc();
         printf("#cicli/byte: %lld\n",(end - start)/(len/8)); 
         welford_update(&welford,(long double) (end - start)/(len/8));  
