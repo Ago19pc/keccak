@@ -3,6 +3,9 @@
 #include <immintrin.h>
 #include "../Utils/intrinUtils.h"
 
+
+#include "../Utils/logger.c"
+
 #define NROUNDS 24
 
 static const uint64_t RoundCostants[NROUNDS] = {
@@ -47,7 +50,7 @@ __m256i ROL1 (__m256i a) {
 
 void StatePermute(uint64_t* state){
 
-    //printf("Implementation Permutation\n");
+    //LOG("Implementation Permutation\n");
     // Ogni paROLa dello stato è da 64 bit, 
     // in un vettore ce ne vanno 4 ma ne servono 5 quindi ne servono 2 di cui uno con 4 elementi e uno con 1 gli altri 3 sono 0
     __m256i a[5][2];
