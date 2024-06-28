@@ -140,23 +140,16 @@ static void keccak_inc_absorb(uint64_t *s_inc, uint32_t r, const uint8_t *m,
    //printf("-Absorbing\n");
    /* Recall that s_inc[25] is the non-absorbed bytes xored into the state */
    while (mlen + s_inc[25] >= r) {
-      LOG("1) data[0]= %d s[25] = %d\n", m[0], s_inc[25]);
       KeccakF1600_StateXORBytes(s_inc, m, s_inc[25], r-s_inc[25]);
-      LOG("XORRED\n");
       
       s_inc[25] = 0;
-      LOG("2) data[0]= %d s[25] = %d\n", m[0], s_inc[25]);
 
       mlen -= (size_t)(r - s_inc[25]);
       m += r - s_inc[25];
-      LOG("3) data[0]= %d s[25] = %d\n", m[0], s_inc[25]);
       s_inc[25] = 0;
       KeccakF1600_StatePermute(s_inc);
       s_inc[25] = 0;
-      LOG("4) data[0]= %d s[25] = %d\n", m[0], s_inc[25]);
-      LOG("PERMUTED\n");
    }
-   LOG("END WHILE\n");
    KeccakF1600_StateXORBytes(s_inc, m, s_inc[25], mlen);
    s_inc[25] = mlen;
 }
@@ -487,17 +480,11 @@ void sha3_384(uint8_t *output, const uint8_t *input, size_t inlen)
  **************************************************/
 void sha3_512(uint8_t *output, const uint8_t *input, size_t inlen)
 {
-   sha3_512incctx state;
+   ALIGN(32) sha3_512incctx state;
    keccak_inc_init(state.ctx);
-   printf("Initialized\n");
-   /* Absorb input */
    keccak_inc_absorb(state.ctx, SHA3_512_RATE, input, inlen);
-   printf("Absorbed\n");
    keccak_inc_finalize(state.ctx, SHA3_512_RATE, 0x06);
-   printf("Finalized\n");
-   /* Squeeze output */
    keccak_inc_squeeze(output, 64, state.ctx, SHA3_512_RATE);
-   printf("Squeezed\n");
 }
 
 void sha3_512_inc_init(sha3_512incctx *state)

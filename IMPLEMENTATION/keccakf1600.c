@@ -3,6 +3,19 @@
 #include <immintrin.h>
 
 
+#ifdef ALIGN
+#undef ALIGN
+#endif
+
+#if defined(__GNUC__)
+#define ALIGN(x) __attribute__((aligned(x)))
+#elif defined(_MSC_VER)
+#define ALIGN(x) __declspec(align(x))
+#elif defined(__ARMCC_VERSION)
+#define ALIGN(x) __align(x)
+#else
+#define ALIGN(x)
+#endif
 
 #define logger 1
 #include "../Utils/logger.c"
@@ -299,20 +312,17 @@ static const uint64_t KeccakF_RoundConstants[NROUNDS] = {
 void KeccakF1600_StateExtractBytes(uint64_t *state, unsigned char *data,
                                    unsigned int offset, unsigned int length)
 {
-   keccak_state_t  *s = (keccak_state_t *)state;
-    uint64_t  t[25];
+    keccak_state_t  *s = (keccak_state_t *)state;
+    uint64_t  t[25] = {0};
     uint64_t  *d = (!offset && (length >= sizeof(t))) ? (uint64_t *)data : t;
     uint64_t  *c4 = (uint64_t *)&s->c4;
-
     if ((d == t) && (length > sizeof(t)))
         length = sizeof(t);
-
     STORE(d + 0*5, s->a0);
     STORE(d + 1*5, s->a1);
     STORE(d + 2*5, s->a2);
     STORE(d + 3*5, s->a3);
     STORE(d + 4*5, s->a4);
-
     d[0*5 + 4] = c4[0];
     d[1*5 + 4] = c4[1];
     d[2*5 + 4] = c4[2];
@@ -334,7 +344,6 @@ void KeccakF1600_StateXORBytes(uint64_t *state, const unsigned char *data,
    ptrdiff_t   lane_n = length / sizeof(uint64_t);
    ptrdiff_t   byte_n = length % sizeof(uint64_t);
    ptrdiff_t   i;
-
    KeccakF1600_StateExtractBytes(state, (uint8_t *)t, 0, sizeof(t));
    //LOG(" EXTRACTED\n");
 
