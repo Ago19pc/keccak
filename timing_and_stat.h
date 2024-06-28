@@ -38,15 +38,15 @@ void welford_init(welford_t* state){
 
 static inline
 void welford_update(welford_t* state, double sample){
-    printf("current mean: %f\n", state->mean);
-    printf("sample: %f\n", sample);
+    //printf("current mean: %f\n", state->mean);
+    //printf("sample: %f\n", sample);
     double delta, delta2;
     state->count = state->count + 1;
     delta = sample - state->mean;
     state->mean += delta / (long double)(state->count);
     delta2 = sample - state->mean;
     state->M2 += delta * delta2;
-    printf("new mean: %f\n", state->mean);
+    //printf("new mean: %f\n", state->mean);
 }
 
 static inline

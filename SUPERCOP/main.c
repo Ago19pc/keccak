@@ -1,10 +1,9 @@
-#include "fips202.c"
 #include "../timing_and_stat.h"
-
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include "../timing_and_stat.h"
+#include "SHA3-512.c"
+
 
 #define logger 1
 #include "../Utils/logger.c"
@@ -162,9 +161,9 @@ int main () {
 
     welford_t welford;
     welford_init(&welford);
-    for (int j = 0; j < 10000; j++){
+    for (int j = 0; j < 100000; j++){
         uint64_t start = x86_64_rtdsc();
-        sha3_512(output, input, len/8);
+        crypto_hash(output, input, len/8);
         uint64_t end = x86_64_rtdsc();
         //printf("#cicli/byte: %lld\n",(end - start)/(len/8)); 
         welford_update(&welford,(long double) (end - start)/(len/8));  
@@ -174,21 +173,11 @@ int main () {
     welford_print(welford);
     printf("\n");
 
-
-    /*
-    for(int i = 0; i < 32; i++){
-        printf("%x", output[i]);
-    }
-    printf("\n");
-    */
-
-    //printf("sha done\n");
     for(int i = 0; i < 64; i++){
         printf("%x", output[i]);
     }
     printf("\n");
 
-    //printf("big input");
     system("pause");
     
 

@@ -14,8 +14,6 @@ http://creativecommons.org/publicdomain/zero/1.0/
 #include <stddef.h>
 #include <string.h>
 
-#include "namespace.h"
-
 #ifdef __GNUC__
     #include <x86intrin.h>
 #else
@@ -270,7 +268,6 @@ _ROLV_CONST(_C4, 27, 20, 39,  8)
     } //for (round_i
 
 #define KECCAK_PERMUTE(const_pref) KECCAK_PERMUTE_LOOP(const_pref, 24)
-#define KECCAK_PERMUTE_12rounds(const_pref) KECCAK_PERMUTE_LOOP(const_pref, 12)
 
 #else
 
@@ -408,7 +405,6 @@ __asm volatile \
 );
 
 #define KECCAK_PERMUTE(const_pref) KECCAK_PERMUTE_LOOP(const_pref, 24)
-#define KECCAK_PERMUTE_12rounds(const_pref) KECCAK_PERMUTE_LOOP(const_pref, 12)
 #endif //__X64 && __GNUC__
 
 typedef UINT64  keccak_rc_t[4];
@@ -479,16 +475,6 @@ void KeccakP1600_AddBytes(void *state, const UINT8 *data, size_t offset, size_t 
 
     KeccakP1600_ExtractBytes(state, (UINT8 *)t, 0, sizeof(t));
 
-/*
-    // "trailingBits + 256" is passed as offset to do "state ^ trailingBits".
-    if (offset >= 256)
-    {
-        if (length < sizeof(t))
-            ((UINT8 *)t)[length] ^= (UINT8)offset;
-        offset = 0;
-    }
-*/
-
     t0 = (UINT64 *)((UINT8 *)t + offset);
 
     for (i = 0; i < lane_n; i++)
@@ -511,63 +497,6 @@ void KeccakP1600_AddBytes(void *state, const UINT8 *data, size_t offset, size_t 
     s->c4 = SET(t[0*5 + 4], t[1*5 + 4], t[2*5 + 4], t[3*5 + 4]);
     s->a44 = _mm256_set1_epi64x(t[4*5 + 4]);
 } //KeccakP1600_AddBytes
-
-//***********************************************************************************
-void KeccakP1600_OverwriteBytes(void *state, const UINT8 *data, size_t offset, size_t length)
-//***********************************************************************************
-{
-    keccak_state_t  *s = (keccak_state_t *)state;
-    UINT64      *d = (UINT64 *)data;
-    UINT8       *t1, *d1;
-    UINT64      t[25];
-    UINT64      *t0;
-    ptrdiff_t   lane_n = length / sizeof(UINT64);
-    ptrdiff_t   byte_n = length % sizeof(UINT64);
-    ptrdiff_t   i;
-
-    KeccakP1600_ExtractBytes(state, (UINT8 *)t, 0, sizeof(t));
-
-    t0 = (UINT64 *)((UINT8 *)t + offset);
-
-    for (i = 0; i < lane_n; i++)
-        t0[i] = d[i];
-
-    if (byte_n)
-    {
-        t1 = (UINT8 *)(t0 + i);
-        d1 = (UINT8 *)(d + i);
-
-        for (i = 0; i < byte_n; i++)
-            t1[i] = d1[i];
-    }
-
-    s->a0 = LOAD(t + 0*5);
-    s->a1 = LOAD(t + 1*5);
-    s->a2 = LOAD(t + 2*5);
-    s->a3 = LOAD(t + 3*5);
-    s->a4 = LOAD(t + 4*5);
-    s->c4 = SET(t[0*5 + 4], t[1*5 + 4], t[2*5 + 4], t[3*5 + 4]);
-    s->a44 = _mm256_set1_epi64x(t[4*5 + 4]);
-} //KeccakP1600_OverwriteBytes
-
-//*********************************************************
-void KeccakP1600_OverwriteWithZeroes(void *state, size_t byteCount)
-//*********************************************************
-{
-    keccak_state_t  *s = (keccak_state_t *)state;
-    UINT64      t[25];
-
-    KeccakP1600_ExtractBytes(state, (UINT8 *)t, 0, sizeof(t));
-    memset(t, 0, byteCount);
-
-    s->a0 = LOAD(t + 0*5);
-    s->a1 = LOAD(t + 1*5);
-    s->a2 = LOAD(t + 2*5);
-    s->a3 = LOAD(t + 3*5);
-    s->a4 = LOAD(t + 4*5);
-    s->c4 = SET(t[0*5 + 4], t[1*5 + 4], t[2*5 + 4], t[3*5 + 4]);
-    s->a44 = _mm256_set1_epi64x(t[4*5 + 4]);
-} //KeccakP1600_OverwriteWithZeroes
 
 //__KeccakP1600_ExtractBytes
 //*********************************************************************************
@@ -598,52 +527,7 @@ void KeccakP1600_ExtractBytes(const void *state, UINT8 *data, size_t offset, siz
         memcpy(data, (UINT8 *)t + offset, length);
 } //KeccakP1600_ExtractBytes
 
-//***************************************************************************************
-void KeccakP1600_ExtractAndAddBytes(const void *state, const UINT8 *input, UINT8 *output, size_t offset, size_t length)
-//***************************************************************************************
-{
-    UINT64      t[25];
-    UINT64      *t0;
-    const UINT64 *dIn = (UINT64 *)input;
-    UINT64      *dOut = (UINT64 *)output;
-    UINT8       *t1, *dlIn, *dlOut;
-    ptrdiff_t   lane_n = length / sizeof(UINT64);
-    ptrdiff_t   byte_n = length % sizeof(UINT64);
-    ptrdiff_t   i;
 
-    KeccakP1600_ExtractBytes(state, (UINT8 *)t, 0, sizeof(t));
-
-    t0 = (UINT64 *)((UINT8 *)t + offset);
-
-    for (i = 0; i < lane_n; i++)
-        dOut[i] = dIn[i] ^ t0[i];
-
-    if (byte_n)
-    {
-        t1 = (UINT8 *)(t0 + i);
-        dlIn = (UINT8 *)(dIn + i);
-        dlOut = (UINT8 *)(dOut + i);
-
-        for (i = 0; i < byte_n; i++)
-            dlOut[i] = dlIn[i] ^ t1[i];
-    }
-} //KeccakP1600_ExtractAndAddBytes
-
-
-//***************************
-void KeccakP1600_Permute_Nrounds(void *state, unsigned int nrounds)
-//***************************
-{
-    KECCAK_CONSTANTS
-
-    KECCAK_PERMUTE_VARS
-
-    KECCAK_LOAD
-
-    KECCAK_PERMUTE_LOOP(, nrounds)
-
-    KECCAK_STORE
-}
 
 //***************************
 void KeccakP1600_Permute_24rounds(void *state)
@@ -659,21 +543,6 @@ void KeccakP1600_Permute_24rounds(void *state)
 
     KECCAK_STORE
 } //KeccakP1600_Permute_24rounds
-
-//***************************
-void KeccakP1600_Permute_12rounds(void *state)
-//***************************
-{
-    KECCAK_CONSTANTS
-
-    KECCAK_PERMUTE_VARS
-
-    KECCAK_LOAD
-
-    KECCAK_PERMUTE_12rounds()
-    
-    KECCAK_STORE
-} //KeccakP1600_Permute_12rounds
 
 //__KeccakF1600_FastLoop_Absorb
 //**************************************************************************************************************
