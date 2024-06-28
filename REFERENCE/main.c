@@ -6,9 +6,8 @@
 #include <stdlib.h>
 #include "../timing_and_stat.h"
 
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
+#define logger 1
+#include "../Utils/logger.c"
 
 
 
@@ -167,13 +166,12 @@ int main () {
         uint64_t start = x86_64_rtdsc();
         sha3_512(output, input, len/8);
         uint64_t end = x86_64_rtdsc();
-        printf("#cicli/byte: %lld\n",(end - start)/(len/8)); 
+        //printf("#cicli/byte: %lld\n",(end - start)/(len/8)); 
         welford_update(&welford,(long double) (end - start)/(len/8));  
         
     }
 
-    welford_print(welford);
-    printf("\n");
+    printf("Media %ld\n", welford.mean);
 
     /*
     for(int i = 0; i < 32; i++){
