@@ -165,7 +165,9 @@ int main () {
     for (int j = 0; j < 10000; j++){
         uint64_t start = x86_64_rtdsc();
         sha3_512(output, input, len/8);
+        
         uint64_t end = x86_64_rtdsc();
+        printf("SHA3 CALCULATED LIKE MY ASS\n");
         //printf("#cicli/byte: %lld\n",(end - start)/(len/8)); 
         welford_update(&welford,(long double) (end - start)/(len/8));  
         

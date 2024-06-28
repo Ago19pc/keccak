@@ -3,6 +3,7 @@
 #include <immintrin.h>
 
 
+
 #define logger 1
 #include "../Utils/logger.c"
 
@@ -335,19 +336,19 @@ void KeccakF1600_StateXORBytes(uint64_t *state, const unsigned char *data,
    ptrdiff_t   i;
 
    KeccakF1600_StateExtractBytes(state, (uint8_t *)t, 0, sizeof(t));
-   LOG(" EXTRACTED\n");
+   //LOG(" EXTRACTED\n");
 
    t0 = (uint64_t *)((uint8_t *)t + offset);
-   LOG("ADDRESS t0: %p      OFFSET: %d\n", t0, offset);
+   //LOG("ADDRESS t0: %p      OFFSET: %d\n", t0, offset);
    // QUI SOTTO CE L'ERRORE
    for (i = 0; i < lane_n; i++) {
-      LOG("t0[i] = %d, i = %d\n", t0[i], i);
-      LOG("d[i] = %d, i = %d\n", d[i], i);
+      //LOG("t0[i] = %d, i = %d\n", t0[i], i);
+      //LOG("d[i] = %d, i = %d\n", d[i], i);
       t0[i] ^= d[i];
    }
    // FINE ERRORE
 
-   LOG(" LANES DONE\n");
+   //LOG(" LANES DONE\n");
 
    if (byte_n) {
       t1 = (uint8_t *)(t0 + i);
@@ -355,15 +356,15 @@ void KeccakF1600_StateXORBytes(uint64_t *state, const unsigned char *data,
 
       for (i = 0; i < byte_n; i++) t1[i] ^= d1[i];
    }
-   LOG(" XORed\n");
+   //LOG(" XORed\n");
    s->a0 = LOAD(t + 0*5);
    s->a1 = LOAD(t + 1*5);
    s->a2 = LOAD(t + 2*5);
    s->a3 = LOAD(t + 3*5);
    s->a4 = LOAD(t + 4*5);
-   LOG(" LOADED\n");
+   //LOG(" LOADED\n");
    s->c4 = SET(t[0*5 + 4], t[1*5 + 4], t[2*5 + 4], t[3*5 + 4]);
-   LOG(" SET\n");
+   //LOG(" SET\n");
    s->a44 = _mm256_set1_epi64x(t[4*5 + 4]);
 }
 

@@ -145,23 +145,25 @@ static void keccak_inc_absorb(uint64_t *s_inc, uint32_t r, const uint8_t *m,
    //printf("-Absorbing\n");
    /* Recall that s_inc[25] is the non-absorbed bytes xored into the state */
    while (mlen + s_inc[25] >= r) {
-      LOG("1) data[0]= %d\n", m[0]);
+      LOG("1) data[0]= %d s[25] = %d\n", m[0], s_inc[25]);
       KeccakF1600_StateXORBytes(s_inc, m, s_inc[25], r-s_inc[25]);
       LOG("XORRED\n");
-      LOG("2) data[0]= %d\n", m[0]);
       
+      s_inc[25] = 0;
+      LOG("2) data[0]= %d s[25] = %d\n", m[0], s_inc[25]);
+
       mlen -= (size_t)(r - s_inc[25]);
       m += r - s_inc[25];
-      LOG("2) data[0]= %d\n", m[0]);
+      LOG("3) data[0]= %d s[25] = %d\n", m[0], s_inc[25]);
       s_inc[25] = 0;
       KeccakF1600_StatePermute(s_inc);
-      LOG("3) data[0]= %d\n", m[0]);
       s_inc[25] = 0;
+      LOG("4) data[0]= %d s[25] = %d\n", m[0], s_inc[25]);
       LOG("PERMUTED\n");
    }
    LOG("END WHILE\n");
    KeccakF1600_StateXORBytes(s_inc, m, s_inc[25], mlen);
-   s_inc[25] += mlen;
+   s_inc[25] = mlen;
 }
 
 /*************************************************
@@ -182,13 +184,14 @@ static void keccak_inc_finalize(uint64_t *s_inc, uint32_t r, uint8_t p)
    /* After keccak_inc_absorb, we are guaranteed that s_inc[25] < r,
       so we can always use one more byte for p in the current state. */
    if(s_inc[25] == r-1) {
-      //printf("--------FINALIZE case 1\n");
+      
       p |= 128;
       KeccakF1600_StateXORBytes(s_inc, &p, s_inc[25], 1);
    } else {
-      //printf("--------FINALIZE case 2\n");
+      uint64_t tmp = s_inc[25];
       KeccakF1600_StateXORBytes(s_inc, &p, s_inc[25], 1);
       p = 128;
+      s_inc[25] = tmp;
       KeccakF1600_StateXORBytes(s_inc, &p, r-1, 1);
    }
    s_inc[25] = 0;
@@ -224,15 +227,10 @@ static void keccak_inc_squeeze(uint8_t *h, size_t outlen,
 
    /* Then squeeze the remaining necessary blocks */
    while (outlen > 0) {
-      //printf("Squeezing pre-permutation\n");
-      //for (int i = 0; i < 25; i++){
-        //printf("IMPL - %d: %llu\n", i, s_inc[i]);
-      //}
+      uint64_t tmp = s_inc[25];
       KeccakF1600_StatePermute(s_inc);
-      //printf("Squeezing post-permutation\n");
-      //for (int i = 0; i < 25; i++){
-        //printf("IMPL - %d: %llu\n", i, s_inc[i]);
-      //}
+      s_inc[25] = tmp;
+      
 
       if(outlen < r) {
          len = outlen;
