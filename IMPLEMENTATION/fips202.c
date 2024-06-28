@@ -118,12 +118,7 @@ static void keccak_squeezeblocks(uint8_t *h, size_t nblocks,
  **************************************************/
 static void keccak_inc_init(uint64_t *s_inc)
 {
-   size_t i;
-
-   for (i = 0; i < 25; ++i) {
-      s_inc[i] = 0;
-   }
-   s_inc[25] = 0;
+   memset(s_inc, 0, sizeof(keccak_state_t));
 }
 /*************************************************
  * Name:        keccak_inc_absorb
