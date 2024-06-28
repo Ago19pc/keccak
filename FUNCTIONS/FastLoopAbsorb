@@ -16,6 +16,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "../Utils/logger.c"
+
+
 #ifdef __ALIGN
 #undef __ALIGN
 #endif
@@ -113,9 +116,9 @@ __m256i SRLV_C4 = _mm256_setr_epi64x(37, 44, 25, 56);
     _mm256_loadu_si256((__m256i*) p)
 
 #define STORE(p, a) \
-    printf("putting content of address %d into %d\n", (__m256i*)p, a);                \
+    LOG("putting content of address %d into %d\n", (__m256i*)p, a);                \
     _mm256_storeu_si256((__m256i*) p, a);                                            \
-    printf("done\n");
+    LOG("done\n");
 
 #define STATE_LOAD\
     a0 = LOAD(&(s->a0));\
@@ -227,7 +230,7 @@ __m256i SRLV_C4 = _mm256_setr_epi64x(37, 44, 25, 56);
 
 
 void extractBytes(const void* state, uint8_t* data, size_t offset, size_t length) {
-    printf("extractBytes started\n");
+    LOG("extractBytes started\n");
     keccak_state_t* s = (keccak_state_t*) state;
     uint64_t state_vec[25];
     uint64_t *data64 = (!offset && (length >= sizeof(state_vec))) ? (uint64_t*) data : state_vec;
@@ -235,16 +238,16 @@ void extractBytes(const void* state, uint8_t* data, size_t offset, size_t length
     if  (data64 == state_vec && length > 200){
         length = 200;
     }
-    printf("  storing\n");
-    printf("%d\n", data64);
-    printf("putting content of address %d\n", data64);
-    printf("into %d\n", s->a0);
+    LOG("  storing\n");
+    LOG("%d\n", data64);
+    LOG("putting content of address %d\n", data64);
+    LOG("into %d\n", s->a0);
     STORE(data64, s->a0);
     STORE(data64 + 5, s->a1);
     STORE(data64 + 10, s->a2);
     STORE(data64 + 15, s->a3);
     STORE(data64 + 20, s->a4);
-    printf("  stored\n");
+    LOG("  stored\n");
     data64[4] = c4[0];
     data64[9] = c4[1];
     data64[14] = c4[2];
@@ -260,7 +263,7 @@ void extractBytes(const void* state, uint8_t* data, size_t offset, size_t length
 
 
 void addBytes(void *state, const uint8_t* data, size_t offsetof, size_t length){
-    printf("Spongebob needs to dring %d liters NOW! He's starting from the %d 'th\n", length, offsetof);
+    LOG("Spongebob needs to dring %d liters NOW! He's starting from the %d 'th\n", length, offsetof);
     keccak_state_t* s = (keccak_state_t*) state;
     uint64_t* data64 = (uint64_t*) data;
     uint8_t * currentStateBytePosition, *currentDataBytePosition;
@@ -268,33 +271,33 @@ void addBytes(void *state, const uint8_t* data, size_t offsetof, size_t length){
     uint64_t* base_state_byte_position;
     ptrdiff_t currentWindow = length / 8;
     volatile ptrdiff_t currentByte = length % 8;
-    printf(" calculating current byte: %d\n", currentByte);
+    LOG(" calculating current byte: %d\n", currentByte);
     ptrdiff_t i;
-    printf("  extracting\n");
+    LOG("  extracting\n");
     extractBytes(state, (uint8_t*) state_vec, 0, sizeof(state_vec));
-    printf("  extracted\n");
+    LOG("  extracted\n");
     base_state_byte_position = (uint64_t*) ((uint8_t*) state_vec + offsetof);
-    printf("  base base done\n");
+    LOG("  base base done\n");
     for (i = 0; i < currentWindow; i++) {
-        printf(" %d %d\n", *data, *((uint64_t*)data));
-        printf(" data64 is %d\n", *data64);
-        printf(" wich is at the word %d\n", *(data64 + i));
-        printf("  %d'th iteration: the data word is %d\n", i, data64[i]);
-        printf("  %d\n", base_state_byte_position[i]);
+        LOG(" %d %d\n", *data, *((uint64_t*)data));
+        LOG(" data64 is %d\n", *data64);
+        LOG(" wich is at the word %d\n", *(data64 + i));
+        LOG("  %d'th iteration: the data word is %d\n", i, data64[i]);
+        LOG("  %d\n", base_state_byte_position[i]);
         base_state_byte_position[i] ^= data64[i];
     }
-    printf("  base done\n");
+    LOG("  base done\n");
     if (currentByte) {
         currentStateBytePosition = (uint8_t*) (base_state_byte_position+i);
         currentDataBytePosition = (uint8_t*) (data64 + i);
-        printf(" positions done\n");
-        printf(" %d %llu\n", currentByte, (uint64_t) currentByte);
+        LOG(" positions done\n");
+        LOG(" %d %llu\n", currentByte, (uint64_t) currentByte);
         for (i = 0; i < currentByte; i++){
-            printf(" %d %d %d %d\n", currentByte, i, currentStateBytePosition[i], currentDataBytePosition[i]);
+            LOG(" %d %d %d %d\n", currentByte, i, currentStateBytePosition[i], currentDataBytePosition[i]);
             currentStateBytePosition[i] ^= currentDataBytePosition[i];
         }
     }
-    printf("  loading\n");
+    LOG("  loading\n");
 
     s->a0 = LOAD(state_vec);
     s->a1 = LOAD(state_vec + 5);
@@ -303,7 +306,7 @@ void addBytes(void *state, const uint8_t* data, size_t offsetof, size_t length){
     s->a4 = LOAD(state_vec + 20);
     s->c4 = SET(state_vec[4], state_vec[9], state_vec[14], state_vec[19]);
     s->a44 = _mm256_set1_epi64x(state_vec[24]);
-    printf("  loaded\n");
+    LOG("  loaded\n");
 }
 
 
@@ -314,7 +317,7 @@ size_t fastLoop (void *state, unsigned int rate, const uint8_t * data, size_t le
     ptrdiff_t currentDataBytePosition;
     STATE_LOAD
     for (currentDataBytePosition = 0; currentDataBytePosition <= (ptrdiff_t) (length/8 - rate/8); currentDataBytePosition += rate/8){
-        printf("Only %d liters are left for Spongebob to drink!\n", length - currentDataBytePosition*8);
+        LOG("Only %d liters are left for Spongebob to drink!\n", length - currentDataBytePosition*8);
         data64 = (uint64_t*) (data + currentDataBytePosition);
         switch (rate)
         {
