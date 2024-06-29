@@ -17,11 +17,7 @@ void readPiece(FILE* file, char* input, int* len, char* result){
         } else if (strcmp(word, "MD") == 0){
             fscanf(file, "%s", word);
             fscanf(file, "%s", result);
-        } else {
-            printf("-%s\n", word);
-            
-            }
-
+        } else printf("ERROR READING FILE\n");
     return;
 }
 
@@ -33,7 +29,7 @@ void longmsg(FILE* file, char* input, int* len, char* result){
 }
 
 // ../sha-3bytetestvectors/SHA3_256LongMsg.rsp
-
+/*
 int main (int argc, char* argv[]){
     if (argc != 2){
         printf("INVALID NUMBER OF ARGUMENTS\n");
@@ -57,3 +53,4 @@ int main (int argc, char* argv[]){
     }
 
 }
+*/
