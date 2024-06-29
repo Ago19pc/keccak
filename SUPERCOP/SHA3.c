@@ -13,14 +13,17 @@ and related or neighboring rights to the source code in this file.
 http://creativecommons.org/publicdomain/zero/1.0/
 */
 
-
-#ifndef crypto_hash_BYTES
-    #define crypto_hash_BYTES 64
-#endif
-
 #include "KeccakSponge.c"
 
-int crypto_hash( unsigned char *out, const unsigned char *in, unsigned long long inlen )
+int crypto_hash512( unsigned char *out, const unsigned char *in, unsigned long long inlen )
 {
-    return Sponge(576, 1024, in, inlen, 0x06, out, crypto_hash_BYTES);
+    return Sponge(576, 1024, in, inlen, 0x06, out, 64);
+}
+int crypto_hash384( unsigned char *out, const unsigned char *in, unsigned long long inlen )
+{
+    return Sponge(832, 768, in, inlen, 0x06, out, 48);
+}
+int crypto_hash256( unsigned char *out, const unsigned char *in, unsigned long long inlen )
+{
+    return Sponge(1088, 512, in, inlen, 0x06, out, 32);
 }
