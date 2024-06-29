@@ -17,9 +17,6 @@
 #define ALIGN(x)
 #endif
 
-#define logger 1
-#include "../Utils/logger.c"
-
 #define NROUNDS 24
 #define ROL(a, offset) ((a << offset) ^ (a >> (64-offset)))
 

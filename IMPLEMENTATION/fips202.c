@@ -1,34 +1,3 @@
-/**
- *
- * Reference ISO-C11 Implementation of CROSS.
- *
- * @version 1.1 (March 2023)
- *
- * @author Alessandro Barenghi <alessandro.barenghi@polimi.it>
- * @author Gerardo Pelosi <gerardo.pelosi@polimi.it>
- *
- * This code is hereby placed in the public domain.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHORS ''AS IS'' AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- **/
-
-/* Based on the public domain implementation in
- * crypto_hash/keccakc512/simple/ from http://bench.cr.yp.to/supercop.html
- * by Ronny Van Keer
- * and the public domain "TweetFips202" implementation
- * from https://twitter.com/tweetfips202
- * by Gilles Van Assche, Daniel J. Bernstein, and Peter Schwabe */
 
 #include <stddef.h>
 #include <stdint.h>
@@ -37,11 +6,7 @@
 #include "fips202.h"
 #include "keccakf1600.c"
 
-#define logger 1
-#include "../Utils/logger.c"
-
 #define NROUNDS 24
-//#define ROL(a, offset) (((a) << (offset)) ^ ((a) >> (64 - (offset))))
 
 
 /*************************************************
@@ -82,29 +47,6 @@ static void keccak_absorb(uint64_t *s,
    }
 }
 
-
-/*************************************************
- * Name:        keccak_squeezeblocks
- *
- * Description: Squeeze step of Keccak. Squeezes full blocks of r bytes each.
- *              Modifies the state. Can be called multiple times to keep squeezing,
- *              i.e., is incremental.
- *
- * Arguments:   - uint8_t *h:     pointer to output blocks
- *              - size_t nblocks: number of blocks to be squeezed (written to h)
- *              - uint64_t *s:    pointer to in/output Keccak state
- *              - uint32_t r:     rate in bytes (e.g., 168 for SHAKE128)
- **************************************************/
-static void keccak_squeezeblocks(uint8_t *h, size_t nblocks,
-                                 uint64_t *s, uint32_t r)
-{
-   while(nblocks > 0) {
-      KeccakF1600_StatePermute(s);
-      KeccakF1600_StateExtractBytes(s, h, 0, r);
-      h += r;
-      nblocks--;
-   }
-}
 
 /*************************************************
  * Name:        keccak_inc_init
@@ -215,100 +157,21 @@ static void keccak_inc_squeeze(uint8_t *h, size_t outlen,
 
    /* Then squeeze the remaining necessary blocks */
    while (outlen > 0) {
-      uint64_t tmp = s_inc[25];
-      KeccakF1600_StatePermute(s_inc);
-      s_inc[25] = tmp;
-      
+       uint64_t tmp = s_inc[25];
+       KeccakF1600_StatePermute(s_inc);
+       s_inc[25] = tmp;
 
-      if(outlen < r) {
-         len = outlen;
-      } else {
-         len = r;
-      }
-      KeccakF1600_StateExtractBytes(s_inc, h, 0, len);
-      h += len;
-      outlen -= len;
-      s_inc[25] = r - len;
+
+       if (outlen < r) {
+           len = outlen;
+       } else {
+           len = r;
+       }
+       KeccakF1600_StateExtractBytes(s_inc, h, 0, len);
+       h += len;
+       outlen -= len;
+       s_inc[25] = r - len;
    }
-}
-
-void shake128_inc_init(shake128incctx *state)
-{
-   keccak_inc_init(state->ctx);
-}
-
-void shake128_inc_absorb(shake128incctx *state, const uint8_t *input,
-                         size_t inlen)
-{
-   keccak_inc_absorb(state->ctx, SHAKE128_RATE, input, inlen);
-}
-
-void shake128_inc_finalize(shake128incctx *state)
-{
-   keccak_inc_finalize(state->ctx, SHAKE128_RATE, 0x1F);
-}
-
-void shake128_inc_squeeze(uint8_t *output, size_t outlen,
-                          shake128incctx *state)
-{
-   keccak_inc_squeeze(output, outlen, state->ctx, SHAKE128_RATE);
-}
-
-void shake256_inc_init(shake256incctx *state)
-{
-   keccak_inc_init(state->ctx);
-}
-
-void shake256_inc_absorb(shake256incctx *state, const uint8_t *input,
-                         size_t inlen)
-{
-   keccak_inc_absorb(state->ctx, SHAKE256_RATE, input, inlen);
-}
-
-void shake256_inc_finalize(shake256incctx *state)
-{
-   keccak_inc_finalize(state->ctx, SHAKE256_RATE, 0x1F);
-}
-
-void shake256_inc_squeeze(uint8_t *output, size_t outlen,
-                          shake256incctx *state)
-{
-   keccak_inc_squeeze(output, outlen, state->ctx, SHAKE256_RATE);
-}
-
-/*************************************************
- * Name:        shake128_absorb
- *
- * Description: Absorb step of the SHAKE128 XOF.
- *              non-incremental, starts by zeroeing the state.
- *
- * Arguments:   - uint64_t *state:      pointer to (uninitialized) output Keccak state
- *              - const uint8_t *input: pointer to input to be absorbed into state
- *              - size_t inlen:         length of input in bytes
- **************************************************/
-void shake128_absorb(shake128ctx *state, const uint8_t *input, size_t inlen)
-{
-   int i;
-   for (i = 0; i < 25; i++)
-      state->ctx[i] = 0;
-   keccak_absorb(state->ctx, SHAKE128_RATE, input, inlen, 0x1F);
-}
-
-/*************************************************
- * Name:        shake128_squeezeblocks
- *
- * Description: Squeeze step of SHAKE128 XOF. Squeezes full blocks of SHAKE128_RATE bytes each.
- *              Modifies the state. Can be called multiple times to keep squeezing,
- *              i.e., is incremental.
- *
- * Arguments:   - uint8_t *output:     pointer to output blocks
- *              - size_t nblocks:      number of blocks to be squeezed (written to output)
- *              - shake128ctx *state:  pointer to in/output Keccak state
- **************************************************/
-void shake128_squeezeblocks(uint8_t *output, size_t nblocks,
-                            shake128ctx *state)
-{
-   keccak_squeezeblocks(output, nblocks, state->ctx, SHAKE128_RATE);
 }
 
 void shake128(uint8_t *output, size_t outlen, const uint8_t *input,
@@ -323,27 +186,6 @@ void shake128(uint8_t *output, size_t outlen, const uint8_t *input,
 
    /* Squeeze output */
    keccak_inc_squeeze(output, outlen, state.ctx, SHAKE128_RATE);
-}
-
-void shake128_ctx_clone(shake128ctx *dest, const shake128ctx *src)
-{
-   memcpy(dest, src, sizeof(shake128ctx));
-}
-
-void shake256_absorb(shake256ctx *state, const uint8_t *input, size_t inlen)
-{
-   int i;
-   for (i = 0; i < 25; i++)
-      state->ctx[i] = 0;
-
-   keccak_absorb(state->ctx, SHAKE256_RATE, input, inlen, 0x1F);
-}
-
-
-void shake256_squeezeblocks(uint8_t *output, size_t nblocks,
-                            shake256ctx *state)
-{
-   keccak_squeezeblocks(output, nblocks, state->ctx, SHAKE256_RATE);
 }
 
 /*************************************************
@@ -370,13 +212,6 @@ void shake256(uint8_t *output, size_t outlen,
    /* Squeeze output */
    keccak_inc_squeeze(output, outlen, state.ctx, SHAKE256_RATE);
 }
-
-void shake256_ctx_clone(shake256ctx *dest, const shake256ctx *src)
-{
-   memcpy(dest, src, sizeof(shake256ctx));
-}
-
-
 /*************************************************
  * Name:        sha3_256
  *
@@ -394,52 +229,6 @@ void sha3_256(uint8_t *output, const uint8_t *input, size_t inlen)
    keccak_inc_finalize(state.ctx, SHA3_256_RATE, 0x06);
    keccak_inc_squeeze(output, 32, state.ctx, SHA3_256_RATE);
 }
-void sha3_256_inc_init(sha3_256incctx *state)
-{
-   keccak_inc_init(state->ctx);
-}
-
-void sha3_256_inc_absorb(sha3_256incctx *state, const uint8_t *input,
-                         size_t inlen)
-{
-   keccak_inc_absorb(state->ctx, SHA3_256_RATE, input, inlen);
-}
-
-void sha3_256_inc_finalize(uint8_t *output, sha3_256incctx *state)
-{
-   uint8_t t[SHA3_256_RATE];
-   keccak_inc_finalize(state->ctx, SHA3_256_RATE, 0x06);
-
-   keccak_squeezeblocks(t, 1, state->ctx, SHA3_256_RATE);
-
-   for (size_t i = 0; i < 32; i++) {
-      output[i] = t[i];
-   }
-}
-
-void sha3_384_inc_init(sha3_384incctx *state)
-{
-   keccak_inc_init(state->ctx);
-}
-
-void sha3_384_inc_absorb(sha3_384incctx *state, const uint8_t *input,
-                         size_t inlen)
-{
-   keccak_inc_absorb(state->ctx, SHA3_384_RATE, input, inlen);
-}
-
-void sha3_384_inc_finalize(uint8_t *output, sha3_384incctx *state)
-{
-   uint8_t t[SHA3_384_RATE];
-   keccak_inc_finalize(state->ctx, SHA3_384_RATE, 0x06);
-
-   keccak_squeezeblocks(t, 1, state->ctx, SHA3_384_RATE);
-
-   for (size_t i = 0; i < 48; i++) {
-      output[i] = t[i];
-   }
-}
-
 /*************************************************
  * Name:        sha3_384
  *
@@ -478,27 +267,4 @@ void sha3_512(uint8_t *output, const uint8_t *input, size_t inlen)
    keccak_inc_absorb(state.ctx, SHA3_512_RATE, input, inlen);
    keccak_inc_finalize(state.ctx, SHA3_512_RATE, 0x06);
    keccak_inc_squeeze(output, 64, state.ctx, SHA3_512_RATE);
-}
-
-void sha3_512_inc_init(sha3_512incctx *state)
-{
-   keccak_inc_init(state->ctx);
-}
-
-void sha3_512_inc_absorb(sha3_512incctx *state, const uint8_t *input,
-                         size_t inlen)
-{
-   keccak_inc_absorb(state->ctx, SHA3_512_RATE, input, inlen);
-}
-
-void sha3_512_inc_finalize(uint8_t *output, sha3_512incctx *state)
-{
-   uint8_t t[SHA3_512_RATE];
-   keccak_inc_finalize(state->ctx, SHA3_512_RATE, 0x06);
-
-   keccak_squeezeblocks(t, 1, state->ctx, SHA3_512_RATE);
-
-   for (size_t i = 0; i < 64; i++) {
-      output[i] = t[i];
-   }
 }
