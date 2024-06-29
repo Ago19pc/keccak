@@ -27,3 +27,12 @@ int crypto_hash256( unsigned char *out, const unsigned char *in, unsigned long l
 {
     return Sponge(1088, 512, in, inlen, 0x06, out, 32);
 }
+int crypto_hash_shake256( unsigned char *out, const unsigned char *in, unsigned long long inlen)
+{
+    return Sponge(1088, 512, in, inlen, 0x1F, out, 136);
+}
+int crypto_hash_shake128( unsigned char *out, const unsigned char *in, unsigned long long inlen)
+{
+    return Sponge(1344, 256, in, inlen, 0x1F, out, 168);
+}
+
