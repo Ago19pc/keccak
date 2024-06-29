@@ -314,7 +314,7 @@ void shake128_squeezeblocks(uint8_t *output, size_t nblocks,
 void shake128(uint8_t *output, size_t outlen, const uint8_t *input,
               size_t inlen)
 {
-   shake128incctx state;
+   ALIGN (32) shake128incctx state;
    keccak_inc_init(state.ctx);
 
    /* Absorb input */
@@ -359,7 +359,7 @@ void shake256_squeezeblocks(uint8_t *output, size_t nblocks,
 void shake256(uint8_t *output, size_t outlen,
               const uint8_t *input, size_t inlen)
 {
-   shake256incctx state;
+   ALIGN(32) shake256incctx state;
 
    keccak_inc_init(state.ctx);
 
