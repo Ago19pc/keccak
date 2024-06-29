@@ -162,7 +162,7 @@ int main () {
 
     welford_t welford;
     welford_init(&welford);
-    for (int j = 0; j < 10000; j++){
+    for (int j = 0; j < 100000; j++){
         uint64_t start = x86_64_rtdsc();
         sha3_512(output, input, len/8);
         uint64_t end = x86_64_rtdsc();
