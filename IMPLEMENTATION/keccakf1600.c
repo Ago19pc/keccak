@@ -19,7 +19,8 @@
 
 
 // al contrario perché l'assembly inizia dall'ultima keccak_rc e decrementa il contatore delle rc, quindi la prima deve essere keccak_rc[23] e l'ultima keccak_rc[0]
-ALIGN(32) uint64_t keccak_rc[24] =
+typedef uint64_t keccak_rc_t[4];
+ALIGN(32) keccak_rc_t keccak_rc[24] =
 {
     {0x8000000080008008ull},    //round 23
     {0x0000000080000001ull},
