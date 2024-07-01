@@ -24,7 +24,7 @@ void KeccakF1600_StateExtractBytes(keccak_state_t *state, unsigned char *data,
     uint64_t  zero[25] = {0};
     uint64_t  *extractedData;
     if(length == 200 && !offset){ //chiamata dalla XOR
-        extractedData = data;
+        extractedData = (uint64_t*)data;
     } else { //chiamata dalla Squeeze
         extractedData = zero;
     }
