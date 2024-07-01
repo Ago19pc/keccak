@@ -4,10 +4,6 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include "../timing_and_stat.h"
-
-#define logger 1
-#include "../Utils/logger.c"
 
 #include "../Utils/testReader.c"
 
@@ -55,7 +51,6 @@ char* byteToHex(uint8_t byte){
     char* hex = malloc(2);
     uint8_t first = byte/16;
     uint8_t second = byte%16;
-    //printf("converting %d", byte);
     switch(first){
         case 0:
             hex[0] = '0';
@@ -195,7 +190,7 @@ void testValidator() {
 
 
 int main () {
-    /*
+
     size_t len = 32768;
     uint8_t input[len/8];
     uint8_t output512[64], output384[48], output256[32];
@@ -208,7 +203,6 @@ int main () {
         correspondingByte += hexToInt(second);
         input[i] = correspondingByte;
     }
-
     welford_t welford512, welford384, welford256;
     welford_init(&welford512);
     welford_init(&welford384);
@@ -253,9 +247,6 @@ int main () {
     }
     printf("\n");
     system("pause");
-
-    */
-   testValidator();
-
+   //testValidator();
     return 0;
 }
