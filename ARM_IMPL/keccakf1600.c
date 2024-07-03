@@ -220,10 +220,10 @@ void KeccakF1600_StatePermute(keccak_state_t *state)
         "vpandn         %4, %2, %6\n"
         "vpandn         %3, %4, %0\n"
         "vpxor          (%%rdx, %%rax), %%ymm9, %%ymm9\n"
-        "vpxor          %0, %2, %0\n"
-        "vpxor          %5, %6, %6\n"
-        "vpandn         %1, %3, %2\n"
-        "vpandn         %5, %1, %5\n"
+        "vpxor          %0, %2, %0\n"				// a0 ^= a2 -> A(0) ^ A(8) | A(1) ^ A(9)
+        "vpxor          %5, %6, %6\n"				// a44 ^= c4
+        "vpandn         %1, %3, %2\n"				// a2 = !(a1 & a3)
+        "vpandn         %5, %1, %5\n"				
         "vpxor          %4, %2, %4\n"
         "vpxor          %3, %5, %5\n"
         "vpunpcklqdq    %6, %%ymm9, %2\n"
