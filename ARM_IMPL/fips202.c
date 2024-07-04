@@ -54,7 +54,7 @@ static void keccak_squeeze(uint8_t *out, size_t outlen,
 void shake128(uint8_t *output, size_t outlen, const uint8_t *input,
               size_t inlen)
 {
-   ALIGN (32) keccak_state_t state;
+   ALIGN (64) keccak_state_t state;
    keccak_init(&state);
 
    inlen = keccak_absorb(&state, SHAKE128_RATE, input, inlen);
@@ -66,7 +66,7 @@ void shake128(uint8_t *output, size_t outlen, const uint8_t *input,
 void shake256(uint8_t *output, size_t outlen,
               const uint8_t *input, size_t inlen)
 {
-   ALIGN(32) keccak_state_t state;
+   ALIGN(64) keccak_state_t state;
 
    keccak_init(&state);
 
@@ -77,7 +77,7 @@ void shake256(uint8_t *output, size_t outlen,
 }
 void sha3_256(uint8_t *output, const uint8_t *input, size_t inlen)
 {
-   ALIGN(32) keccak_state_t state;
+   ALIGN(64) keccak_state_t state;
    keccak_init(&state);
    inlen = keccak_absorb(&state, SHA3_256_RATE, input, inlen);
    keccak_finalize(&state, SHA3_256_RATE, 0x06, inlen);
@@ -85,7 +85,7 @@ void sha3_256(uint8_t *output, const uint8_t *input, size_t inlen)
 }
 void sha3_384(uint8_t *output, const uint8_t *input, size_t inlen)
 {
-   ALIGN(32) keccak_state_t state;
+   ALIGN(64) keccak_state_t state;
    keccak_init(&state);
 
    inlen = keccak_absorb(&state, SHA3_384_RATE, input, inlen);
@@ -96,7 +96,7 @@ void sha3_384(uint8_t *output, const uint8_t *input, size_t inlen)
 
 void sha3_512(uint8_t *output, const uint8_t *input, size_t inlen)
 {
-   ALIGN(32) keccak_state_t state;
+   ALIGN(64) keccak_state_t state;
    keccak_init(&state);
    inlen = keccak_absorb(&state, SHA3_512_RATE, input, inlen);
    keccak_finalize(&state, SHA3_512_RATE, 0x06, inlen);
