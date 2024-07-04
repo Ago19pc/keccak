@@ -1,13 +1,12 @@
 #pragma once
 
 #include <stdint.h>
-#include <immintrin.h>
+#include <arm_neon.h>
 
 typedef struct keccak_state_t
 {
-    __m256i a0, a1, a2, a3, a4; //righe (solo i primi 4 elementi per riga): a0=S[0, 0...3], a1=S[1, 0...3], a2=S[2, 0...3], a3=S[3, 0...3], a4=S[4, 0...3]
-    __m256i c4;                 //ultima colonna (solo i primi 4 elementi) = S[0...4, 4]
-    __m256i a44;                //ultimo elemento = S[4,4]
+    uint64x2_t a04, a15, a26, a37, a812, a913, a1014, a1115, a1620, a1721, a1822, a1923; //2 elementi alla volta
+    uint64_t a24; //ultima parola
 } keccak_state_t;
 
 void KeccakF1600_StateExtractBytes(keccak_state_t *state, unsigned char *data,

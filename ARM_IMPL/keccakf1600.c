@@ -28,17 +28,13 @@ void KeccakF1600_StateExtractBytes(keccak_state_t *state, unsigned char *data,
     } else { //chiamata dalla Squeeze
         extractedData = zero;
     }
-    //Estrazione righe (tranne ultima colonna)
-    _mm256_storeu_si256((__m256i *)(extractedData), state->a0);
-    _mm256_storeu_si256((__m256i *)(extractedData + 5), state->a1);
-    _mm256_storeu_si256((__m256i *)(extractedData + 10), state->a2);
-    _mm256_storeu_si256((__m256i *)(extractedData + 15), state->a3);
-    _mm256_storeu_si256((__m256i *)(extractedData + 20), state->a4);
-    //Estrazione ultima colonna.
-    uint64_t *lastCol = (uint64_t *)&state->c4;
-    for(int i = 0; i < 5; i++) {
-        extractedData[4 + i*5] = lastCol[i];
-    }
+    uint64x2x4_t s1 = {state->a04, state->a15, state->a26, state->a37};
+    vst4q_u64(extractedData, s1);
+    uint64x2x4_t s2 = {state->a812, state->a913, state->a1014, state->a1115};
+    vst4q_u64(extractedData + 8, s2);
+    uint64x2x4_t s3 = {state->a1620, state->a1721, state->a1822, state->a1923};
+    vst4q_u64(extractedData + 16, s3);
+    extractedData[24] = state->a24;
     if (extractedData == zero) //modifico data solo se sto venendo chiamato dalla squeeze (altrimenti è ridondante)
         memcpy(data, (uint8_t *)zero + offset, length);
 }
@@ -49,18 +45,17 @@ void KeccakF1600_StateXORBytes(keccak_state_t *state, const unsigned char *data,
     uint64_t*     dataWords = (uint64_t *)data;
     uint64_t      stateWords[25];
     uint64_t*     firstStateWord = (uint64_t *)((uint8_t *)stateWords + offset);
-
     KeccakF1600_StateExtractBytes(state, (uint8_t *)stateWords, 0, 200);
-    while (length > 32) {
-        __m256i stateVec = _mm256_loadu_si256((__m256i *) firstStateWord);
-        __m256i dataVec = _mm256_loadu_si256((__m256i *) dataWords);
-        stateVec = _mm256_xor_si256(stateVec, dataVec);
-        _mm256_storeu_si256((__m256i *) firstStateWord, stateVec);
-        firstStateWord += 4;
-        dataWords += 4;
-        length -= 32;
+    while (length > 16) {
+        uint64x2_t stateVec = vld1q_u64(firstStateWord);
+        uint64x2_t dataVec = vld1q_u64(dataWords);
+        stateVec = veorq_u64(stateVec, dataVec);
+        vst1q_u64(firstStateWord, stateVec);
+        firstStateWord += 2;
+        dataWords += 2;
+        length -= 16;
     }
-    while (length > 8) {
+    if (length > 8) {
         *firstStateWord ^= *dataWords;
         firstStateWord++;
         dataWords++;
@@ -69,14 +64,31 @@ void KeccakF1600_StateXORBytes(keccak_state_t *state, const unsigned char *data,
     for (int i = 0; i < length; i++) {
       *((uint8_t *) firstStateWord + i) ^= *((uint8_t *) dataWords + i);
     }
-
-    state->a0 = _mm256_loadu_si256((const __m256i *)(stateWords));
-    state->a1 = _mm256_loadu_si256((const __m256i *)(stateWords + 5));
-    state->a2 = _mm256_loadu_si256((const __m256i *)(stateWords + 10));
-    state->a3 = _mm256_loadu_si256((const __m256i *)(stateWords + 15));
-    state->a4 = _mm256_loadu_si256((const __m256i *)(stateWords + 20));
-    state->c4 = _mm256_setr_epi64x(stateWords[4], stateWords[9], stateWords[14], stateWords[19]);
-    state->a44 = _mm256_set1_epi64x(stateWords[24]);
+    uint64x2_t s04 = {stateWords[0], stateWords[4]};
+    vst1q_u64(state->a04, s04);
+    uint64x2_t s15 = {stateWords[1], stateWords[5]};
+    vst1q_u64(state->a15, s15);
+    uint64x2_t s26 = {stateWords[2], stateWords[6]};
+    vst1q_u64(state->a26, s26);
+    uint64x2_t s37 = {stateWords[3], stateWords[7]};
+    vst1q_u64(state->a37, s37);
+    uint64x2_t s812 = {stateWords[8], stateWords[12]};
+    vst1q_u64(state->a812, s812);
+    uint64x2_t s913 = {stateWords[9], stateWords[13]};
+    vst1q_u64(state->a913, s913);
+    uint64x2_t s1014 = {stateWords[10], stateWords[14]};
+    vst1q_u64(state->a1014, s1014);
+    uint64x2_t s1115 = {stateWords[11], stateWords[15]};
+    vst1q_u64(state->a1115, s1115);
+    uint64x2_t s1620 = {stateWords[16], stateWords[20]};
+    vst1q_u64(state->a1620, s1620);
+    uint64x2_t s1721 = {stateWords[17], stateWords[21]};
+    vst1q_u64(state->a1721, s1721);
+    uint64x2_t s1822 = {stateWords[18], stateWords[22]};
+    vst1q_u64(state->a1822, s1822);
+    uint64x2_t s1923 = {stateWords[19], stateWords[23]};
+    vst1q_u64(state->a1923, s1923);
+    state->a24 = stateWords[24];
 }
 
 void KeccakF1600_StatePermute(keccak_state_t *state)
@@ -120,14 +132,7 @@ void KeccakF1600_StatePermute(keccak_state_t *state)
     volatile __m256i right_rotation_constant_a4 = _mm256_setr_epi64x(46, 62, 3, 8);
     volatile __m256i left_rotation_constant_c4 = _mm256_setr_epi64x(27, 20, 39,  8);
     volatile __m256i right_rotation_constant_c4 = _mm256_setr_epi64x(37, 44, 25, 56);
-    __m256i a0, a1, a2, a3, a4, c4, a44;
-    a0 = _mm256_loadu_si256(&state->a0);
-    a1 = _mm256_loadu_si256(&state->a1);
-    a2 = _mm256_loadu_si256(&state->a2);
-    a3 = _mm256_loadu_si256(&state->a3);
-    a4 = _mm256_loadu_si256(&state->a4);
-    c4 = _mm256_loadu_si256(&state->c4);
-    a44 = _mm256_loadu_si256(&state->a44);
+
     __asm volatile(
         "movq           %7, %%rax\n"                    //carica il numero di round
     "1:\n"                                              //inizio nuovo round
