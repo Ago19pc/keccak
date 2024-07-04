@@ -17,7 +17,9 @@
 #define ALIGN(x)
 #endif
 
-
+/**
+ * non modifica lo stato. Vuole stato iniziale interlacciato. Data (l'output) diventa lo stato NON INTERLACCIATO
+ */
 void KeccakF1600_StateExtractBytes(keccak_state_t *state, unsigned char *data,
                                    unsigned int offset, unsigned int length)
 {
@@ -38,7 +40,9 @@ void KeccakF1600_StateExtractBytes(keccak_state_t *state, unsigned char *data,
     if (extractedData == zero) //modifico data solo se sto venendo chiamato dalla squeeze (altrimenti è ridondante)
         memcpy(data, (uint8_t *)zero + offset, length);
 }
-
+/**
+ * Vuole lo stato iniziale interlacciato. Ritorna il nuovo stato interlacciato. Vuole data NON interlacciato
+ */
 void KeccakF1600_StateXORBytes(keccak_state_t *state, const unsigned char *data,
                                unsigned int offset, unsigned int length)
 {
