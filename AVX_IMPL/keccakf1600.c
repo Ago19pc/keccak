@@ -108,19 +108,24 @@ void KeccakF1600_StatePermute(keccak_state_t *state)
             {0x0000000000008082ull},
             {0x0000000000000001ull},    //round 0
     };
-    volatile __m256i left_rotation_constant_a0 = _mm256_setr_epi64x( 0,  1, 62, 28);
-    volatile __m256i right_rotation_constant_a0 = _mm256_setr_epi64x(64, 63, 2, 36);
-    volatile __m256i left_rotation_constant_a1 = _mm256_setr_epi64x(36, 44,  6, 55);
-    volatile __m256i right_rotation_constant_a1 = _mm256_setr_epi64x(28, 20, 58, 9);
-    volatile __m256i left_rotation_constant_a2 = _mm256_setr_epi64x( 3, 10, 43, 25);
-    volatile __m256i right_rotation_constant_a2 = _mm256_setr_epi64x(61, 54, 21, 39);
-    volatile __m256i left_rotation_constant_a3 = _mm256_setr_epi64x(41, 45, 15, 21);
-    volatile __m256i right_rotation_constant_a3 = _mm256_setr_epi64x(23, 19, 49, 43);
-    volatile __m256i left_rotation_constant_a4 = _mm256_setr_epi64x(18, 2, 61, 56);
-    volatile __m256i right_rotation_constant_a4 = _mm256_setr_epi64x(46, 62, 3, 8);
-    volatile __m256i left_rotation_constant_c4 = _mm256_setr_epi64x(27, 20, 39,  8);
-    volatile __m256i right_rotation_constant_c4 = _mm256_setr_epi64x(37, 44, 25, 56);
-    __m256i a0, a1, a2, a3, a4, c4, a44;
+    __m256i left_rotation_constant_a0 = _mm256_setr_epi64x( 0,  1, 62, 28);
+    __m256i right_rotation_constant_a0 = _mm256_setr_epi64x(64, 63, 2, 36);
+    __m256i left_rotation_constant_a1 = _mm256_setr_epi64x(36, 44,  6, 55);
+    __m256i right_rotation_constant_a1 = _mm256_setr_epi64x(28, 20, 58, 9);
+    __m256i left_rotation_constant_a2 = _mm256_setr_epi64x( 3, 10, 43, 25);
+    __m256i right_rotation_constant_a2 = _mm256_setr_epi64x(61, 54, 21, 39);
+    __m256i left_rotation_constant_a3 = _mm256_setr_epi64x(41, 45, 15, 21);
+    __m256i right_rotation_constant_a3 = _mm256_setr_epi64x(23, 19, 49, 43);
+    __m256i left_rotation_constant_a4 = _mm256_setr_epi64x(18, 2, 61, 56);
+    __m256i right_rotation_constant_a4 = _mm256_setr_epi64x(46, 62, 3, 8);
+    __m256i left_rotation_constant_c4 = _mm256_setr_epi64x(27, 20, 39,  8);
+    __m256i right_rotation_constant_c4 = _mm256_setr_epi64x(37, 44, 25, 56);
+    ptrdiff_t       round_i;
+    __m256i a0, a1, a2, a3, a4, c4;
+    __m256i a04, a14, a24, a34, a44;
+    __m256i b0, b1, b2, b3, b4;
+    __m256i b04, b14, b24, b34, b44;
+    __m256i r0, r1, r2, r3;
     a0 = _mm256_loadu_si256(&state->a0);
     a1 = _mm256_loadu_si256(&state->a1);
     a2 = _mm256_loadu_si256(&state->a2);
@@ -128,136 +133,114 @@ void KeccakF1600_StatePermute(keccak_state_t *state)
     a4 = _mm256_loadu_si256(&state->a4);
     c4 = _mm256_loadu_si256(&state->c4);
     a44 = _mm256_loadu_si256(&state->a44);
-    __asm volatile(
-        "movq           %7, %%rax\n"                    //carica il numero di round
-    "1:\n"                                              //inizio nuovo round
-        //theta
-        "vpxor          %1, %0, %%ymm9\n"               //ymm9 = a0^a1
-        "vpxor          %2, %%ymm9, %%ymm9\n"           //ymm9 ^= a2
-        "vpxor          %3, %%ymm9, %%ymm9\n"           //ymm9 ^= a3
-        "vpxor          %4, %%ymm9, %%ymm9\n"           //ymm9 ^= a4
-        "vpermq         $147, %%ymm9, %%ymm8\n"         //ymm8 = perm(ymm9, 147)
-        "vpsrlq         $63, %%ymm9, %%ymm7\n"          //ymm7 = ymm9 >> 63
-        "vpsllq         $1, %%ymm9, %%ymm9\n"           //ymm9 = ymm9 << 1
-        "vperm2i128     $17, %5, %5, %%ymm0\n"          //ymm0 = perm(c4, c4, 17)
-        "vpxor          %%ymm0, %5, %%ymm0\n"           //ymm0 ^= c4
-        "vpunpckhqdq    %%ymm0, %%ymm0, %%ymm6\n"       //ymm6 = ymm0H ymm0H
-        "vpxor          %%ymm6, %%ymm0, %%ymm6\n"       //ymm6 ^= ymm0
-        "vpxor          %6, %%ymm6, %%ymm6\n"           //ymm6 ^= a44
-        "vpxor          %%ymm7, %%ymm9, %%ymm7\n"       //ymm7 ^= ymm9
-        "vpblendd       $3, %%ymm6, %%ymm8, %%ymm0\n"   //ymm0 = blend(ymm6, ymm8, 3)
-        "vpsrlq         $63, %%ymm6, %%ymm9\n"          //ymm9 = ymm6 >> 63
-        "vpsllq         $1, %%ymm6, %%ymm6\n"           //ymm6 = ymm6 << 1
-        "vpxor          %%ymm9, %%ymm6, %%ymm6\n"       //ymm6 ^= ymm9
-        "vpblendd       $3, %%ymm6, %%ymm7, %%ymm6\n"   //ymm6 = blend(ymm6, ymm7, 3)
-        "vpxor          %%ymm7, %%ymm8, %%ymm7\n"       //ymm7 ^= ymm8
-        "vpxor          %%ymm7, %6, %%ymm9\n"           //ymm9 = ymm7 ^ a44
-        "vpermq         $57, %%ymm6, %%ymm6\n"
-        "vpxor          %%ymm6, %%ymm0, %%ymm0\n"
-        "vpxor          %%ymm0, %0, %0\n"
-        "vpxor          %%ymm0, %1, %1\n"
-        "vpbroadcastq   %%xmm7, %%ymm7\n"
-        "vpxor          %%ymm7, %5, %5\n"
-        "vpxor          %%ymm0, %2, %2\n"
-        "vpxor          %%ymm0, %3, %3\n"
-        "vpxor          %%ymm0, %4, %4\n"
-        //ro + pi
-        "vmovdqa        %[right_rotation_constant_a0], %%ymm6\n"
-        "vmovdqa        %[left_rotation_constant_a0], %6\n"
-        "vmovdqa        %[right_rotation_constant_a1], %%ymm7\n"
-        "vpsrlvq        %%ymm6, %0, %%ymm6\n"
-        "vpsllvq        %6, %0, %0\n"
-        "vmovdqa        %[left_rotation_constant_a1], %6\n"
-        "vmovdqa        %[right_rotation_constant_a2], %%ymm0\n"
-        "vpsrlvq        %%ymm7, %1, %%ymm7\n"
-        "vpsllvq        %6, %1, %1\n"
-        "vmovdqa        %[left_rotation_constant_a2], %6\n"
-        "vmovdqa        %[right_rotation_constant_a3], %%ymm10\n"
-        "vpsrlvq        %%ymm0, %2, %%ymm0\n"
-        "vpsllvq        %6, %2, %2\n"
-        "vpxor          %%ymm7, %1, %%ymm7\n"
-        "vpxor          %%ymm6, %0, %%ymm6\n"
-        "vpermq         $28, %%ymm6, %1\n"
-        "vperm2i128     $17, %%ymm6, %%ymm6, %%ymm6\n"
-        "vpxor          %%ymm0, %2, %2\n"
-        "vpsrlvq        %%ymm10, %3, %%ymm0\n"
-        "vpermq         $114, %2, %2\n"
-        "vmovdqa        %[left_rotation_constant_a3], %%ymm10\n"
-        "vpsllvq        %%ymm10, %3, %3\n"
-        "vpxor          %%ymm0, %3, %%ymm10\n"
-        "vpermq         $135, %%ymm10, %3\n"
-        "vmovdqa        %[right_rotation_constant_a4], %%ymm0\n"
-        "vpsrlvq        %%ymm0, %4, %6\n"
-        "vmovdqa        %[left_rotation_constant_a4], %%ymm0\n"
-        "vpsllvq        %%ymm0, %4, %4\n"
-        "vpxor          %6, %4, %%ymm0\n"
-        "vpermq         $201, %%ymm0, %0\n"
-        "vpunpckhqdq    %%ymm0, %%ymm0, %%ymm0\n"
-        "vmovdqa        %[right_rotation_constant_c4], %4\n"
-        "vpsrlvq        %4, %5, %6\n"
-        "vmovdqa        %[left_rotation_constant_c4], %4\n"
-        "vpsllvq        %4, %5, %5\n"
-        "vpxor          %6, %5, %4\n"
-        "vpsrlq         $50, %%ymm9, %5\n"
-        "vpsllq         $14, %%ymm9, %6\n"
-        "vperm2i128     $17, %4, %4, %%ymm8\n"
-        "vpxor          %5, %6, %%ymm9\n"
-        "vmovdqa        %x4, %x6\n"
-        "vpunpckhqdq    %4, %4, %5\n"
-        "vpbroadcastq   %%xmm9, %%ymm9\n"
-        "vpbroadcastq   %x6, %6\n"
-        "vpermq         $255, %4, %4\n"
-        "vpblendd       $48, %4, %3, %4\n"
-        "vpblendd       $3, %%ymm9, %0, %3\n"
-        "vpblendd       $192, %6, %1, %1\n"
-        "vpermq         $45, %%ymm7, %6\n"
-        "vpblendd       $12, %5, %6, %5\n"
-        "vpermq         $255, %%ymm7, %%ymm7\n"
-        //chi + iota
-        "vpandn         %2, %5, %%ymm9\n"
-        "subq           $32, %%rax\n"
-        "vpxor          %1, %%ymm9, %%ymm9\n"
-        "vpandn         %4, %2, %6\n"
-        "vpandn         %3, %4, %0\n"
-        "vpxor          (%%rdx, %%rax), %%ymm9, %%ymm9\n"
-        "vpxor          %0, %2, %0\n"
-        "vpxor          %5, %6, %6\n"
-        "vpandn         %1, %3, %2\n"
-        "vpandn         %5, %1, %5\n"
-        "vpxor          %4, %2, %4\n"
-        "vpxor          %3, %5, %5\n"
-        "vpunpcklqdq    %6, %%ymm9, %2\n"
-        "vpunpckhqdq    %6, %%ymm9, %6\n"
-        "vpunpcklqdq    %4, %0, %%ymm9\n"
-        "vpunpckhqdq    %4, %0, %4\n"
-        "vperm2i128     $32, %%ymm9, %2, %0\n"
-        "vperm2i128     $32, %4, %6, %1\n"
-        "vperm2i128     $19, %6, %4, %3\n"
-        "vperm2i128     $19, %2, %%ymm9, %2\n"
-        "vpandn         %%ymm10, %%ymm8, %4\n"
-        "vpandn         %%ymm0, %%ymm10, %6\n"
-        "vpandn         %%ymm8, %%ymm7, %%ymm9\n"
-        "vpxor          %4, %%ymm7, %4\n"
-        "vpxor          %6, %%ymm8, %%ymm8\n"
-        "vpxor          %%ymm9, %%ymm6, %%ymm9\n"
-        "vpandn         %%ymm6, %%ymm0, %6\n"
-        "vpxor          %6, %%ymm10, %%ymm10\n"
-        "vpandn         %%ymm7, %%ymm6, %6\n"
-        "vpunpcklqdq    %4, %%ymm9, %%ymm9\n"
-        "vpunpcklqdq    %%ymm10, %%ymm8, %%ymm8\n"
-        "vperm2i128     $32, %%ymm8, %%ymm9, %4\n"
-        "vpxor          %6, %%ymm0, %6\n"
-        "jnz            1b\n"
-        : "+x"(a0), "+x"(a1), "+x"(a2), "+x"(a3), "+x"(a4), "+x"(c4), "+x"(a44)
-        : "i"(768), "d"(round_constants),
-            [left_rotation_constant_a0] "m"(left_rotation_constant_a0), [right_rotation_constant_a0] "m"(right_rotation_constant_a0),
-            [left_rotation_constant_a1] "m"(left_rotation_constant_a1), [right_rotation_constant_a1] "m"(right_rotation_constant_a1),
-            [left_rotation_constant_a2] "m"(left_rotation_constant_a2), [right_rotation_constant_a2] "m"(right_rotation_constant_a2),
-            [left_rotation_constant_a3] "m"(left_rotation_constant_a3), [right_rotation_constant_a3] "m"(right_rotation_constant_a3),
-            [left_rotation_constant_a4] "m"(left_rotation_constant_a4), [right_rotation_constant_a4] "m"(right_rotation_constant_a4),
-            [left_rotation_constant_c4] "m"(left_rotation_constant_c4), [right_rotation_constant_c4] "m"(right_rotation_constant_c4)
-        : "rax", "xmm0", "xmm6", "xmm7", "xmm8", "xmm9", "xmm10"
-    );
+    for (round_i = 23; round_i >= 0; round_i--)
+    {
+        r0 = _mm256_xor_si256(a0, a1);
+        r0 = _mm256_xor_si256(r0, a2);
+        r0 = _mm256_xor_si256(r0, a3);
+        r0 = _mm256_xor_si256(r0, a4);
+        r1 = _mm256_xor_si256(c4, _mm256_permute2x128_si256(c4, c4, 0x11));
+        r1 = _mm256_xor_si256(r1, _mm256_unpackhi_epi64(r1, r1));
+        r1 = _mm256_xor_si256(r1, a44);                  /*C[4]*/
+
+        /* D[x] = C[x - 1] ^ rot(  C[x + 1], 1) */
+
+        /* (b0, b04) = C[4, 0, 1, 2, 3]. */
+        b0 = _mm256_permute4x64_epi64(r0, _MM_SHUFFLE(2, 1, 0, 3));       /*C[3, 0, 1, 2]*/
+        b04 = b0;                           /*C[3]*/
+        b0 = _mm256_blend_epi32(b0, r1, _MM_SHUFFLE(0, 0, 0, 3));     /*C[4, 0, 1, 2]*/
+
+        r0 = _mm256_xor_si256(_mm256_slli_epi64(r0, 1), _mm256_srli_epi64(r0, 63));                    /*rot(C[0, 1, 2, 3])*/
+        r1 = _mm256_xor_si256(_mm256_slli_epi64(r1, 1), _mm256_srli_epi64(r1, 63));                    /*rot(C[4])*/
+        /* (r1, r0) = rot(C[1, 2, 3, 4, 0]). */
+
+        r1 = _mm256_blend_epi32(r0, r1, _MM_SHUFFLE(0, 0, 0, 3));     /*rot(C[4, 1, 2, 3])*/
+
+        r1 = _mm256_permute4x64_epi64(r1, _MM_SHUFFLE(0, 3, 2, 1));       /*rot(C[1, 2, 3, 4])*/
+
+
+        /* (b0, b04) = D[0, 1, 2, 3, 4]. */
+        b0 = _mm256_xor_si256(b0, r1);
+        b04 = _mm256_xor_si256(b04, r0);
+
+        /* A[y, x] = A[y, x] ^ D[x] */
+        a0 = _mm256_xor_si256(a0, b0);
+        a1 = _mm256_xor_si256(a1, b0);
+        a2 = _mm256_xor_si256(a2, b0);
+        a3 = _mm256_xor_si256(a3, b0);
+        a4 = _mm256_xor_si256(a4, b0);
+        a44 = _mm256_xor_si256(a44, b04);
+        c4 = _mm256_xor_si256(c4, _mm256_broadcastq_epi64(_mm256_castsi256_si128(b04)));
+        /* B[2*x + 3*y, y] = rot(A[y, x], R[y, x]) */
+        /* After this, y-rows of A become y-columns of B. */
+
+        /* b0..b4 are rows a[row, 0..3], c4 is column a[0..3, 4], and a44 is element a[4, 4]. */
+        b0 = _mm256_xor_si256(_mm256_sllv_epi64(a0, left_rotation_constant_a0), _mm256_srlv_epi64(a0, right_rotation_constant_a0));
+        b1 = _mm256_xor_si256(_mm256_sllv_epi64(a1, left_rotation_constant_a1), _mm256_srlv_epi64(a1, right_rotation_constant_a1));
+        b2 = _mm256_xor_si256(_mm256_sllv_epi64(a2, left_rotation_constant_a2), _mm256_srlv_epi64(a2, right_rotation_constant_a2));
+        b3 = _mm256_xor_si256(_mm256_sllv_epi64(a3, left_rotation_constant_a3), _mm256_srlv_epi64(a3, right_rotation_constant_a3));
+        b4 = _mm256_xor_si256(_mm256_sllv_epi64(a4, left_rotation_constant_a4), _mm256_srlv_epi64(a4, right_rotation_constant_a4));
+        c4 = _mm256_xor_si256(_mm256_sllv_epi64(c4, left_rotation_constant_c4), _mm256_srlv_epi64(c4, right_rotation_constant_c4));
+
+/*      c4 = PERMUTE(c4, 2, 1, 3, 0);   //to avoid r1 calc below; makes slower other parts */
+        a44 = _mm256_xor_si256(_mm256_slli_epi64(a44, 14),_mm256_srli_epi64(a44, 50));
+
+        /* Now b0..b4 are columns a[0..3, col], b04..b44 are last elements a[4, 0..4] of those columns. */
+        r0 = _mm256_permute4x64_epi64(b0, _MM_SHUFFLE(0, 1, 3, 0));
+        r1 = _mm256_broadcastq_epi64(_mm256_castsi256_si128(c4));
+        b04 = _mm256_permute2x128_si256(b0, b0, 0x11);
+        b0 = _mm256_blend_epi32(r0, r1, _MM_SHUFFLE(3, 0, 0, 0));
+
+        r0 = _mm256_permute4x64_epi64(b1, _MM_SHUFFLE(0, 2, 3, 1));
+        r1 = _mm256_unpackhi_epi64(c4, c4);
+        b14 = _mm256_permute4x64_epi64(b1, _MM_SHUFFLE(3, 3, 3, 3));
+        b1 = _mm256_blend_epi32(r0, r1, _MM_SHUFFLE(0, 0, 3, 0));
+
+        b2 = _mm256_permute4x64_epi64(b2, _MM_SHUFFLE(1, 3, 0, 2));
+        b24 = _mm256_permute2x128_si256(c4, c4, 0x11);
+
+        r0 = _mm256_permute4x64_epi64(b3, _MM_SHUFFLE(2, 0, 1, 3));
+        r1 = _mm256_permute4x64_epi64(c4, _MM_SHUFFLE(3, 3, 3, 3));
+        b34 = b3; \
+        b3 = _mm256_blend_epi32(r0, r1, _MM_SHUFFLE(0, 3, 0, 0));
+
+        r0 = _mm256_permute4x64_epi64(b4, _MM_SHUFFLE(3, 0, 2, 1));
+        r1 = _mm256_broadcastq_epi64(_mm256_castsi256_si128(a44));
+        b44 = _mm256_unpackhi_epi64(b4, b4);
+/*      b44 = r0; */
+        b4 = _mm256_blend_epi32(r0, r1, _MM_SHUFFLE(0, 0, 0, 3));
+
+        /* A[y, x] = B[y, x] ^ (~B[y, x + 1] & B[y, x + 2]) */
+        /* A[0, 0] = A[0, 0] ^ RC */
+
+        /* a0..a3, c4 are columnss a[0..3, col]. */
+        a0 = _mm256_xor_si256(b0, _mm256_andnot_si256(b1, b2));
+        a0 = _mm256_xor_si256(a0, *(__m256i *)(round_constants + round_i));
+
+        a1 = _mm256_xor_si256(b1, _mm256_andnot_si256(b2, b3));
+        a2 = _mm256_xor_si256(b2, _mm256_andnot_si256(b3, b4));
+        a3 = _mm256_xor_si256(b3, _mm256_andnot_si256(b4, b0));
+        c4 = _mm256_xor_si256(b4, _mm256_andnot_si256(b0, b1));
+
+        /* Transpose A[] so that a0..a4 are rows again. */
+        r0 = _mm256_unpacklo_epi64(a0, a1);
+        r1 = _mm256_unpackhi_epi64(a0, a1);
+        r2 = _mm256_unpacklo_epi64(a2, a3);
+        r3 = _mm256_unpackhi_epi64(a2, a3);
+        a0 = _mm256_permute2x128_si256(r0, r2, 0x20);
+        a1 = _mm256_permute2x128_si256(r1, r3, 0x20);
+        a2 = _mm256_permute2x128_si256(r2, r0, 0x13);
+        a3 = _mm256_permute2x128_si256(r3, r1, 0x13);
+        a04 = _mm256_xor_si256(b04, _mm256_andnot_si256(b14, b24));
+        a14 = _mm256_xor_si256(b14, _mm256_andnot_si256(b24, b34));
+        a24 = _mm256_xor_si256(b24, _mm256_andnot_si256(b34, b44));
+        a34 = _mm256_xor_si256(b34, _mm256_andnot_si256(b44, b04));
+        a44 = _mm256_xor_si256(b44, _mm256_andnot_si256(b04, b14));
+
+        r0 = _mm256_unpacklo_epi64(a04, a14);
+        r1 = _mm256_unpacklo_epi64(a24, a34);
+        a4 = _mm256_permute2x128_si256(r0, r1, 0x20);
+    }
 
     _mm256_storeu_si256(&state->a0, a0);
     _mm256_storeu_si256(&state->a1, a1);
