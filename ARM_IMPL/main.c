@@ -207,19 +207,19 @@ int main () {
     welford_init(&welford512);
     welford_init(&welford384);
     welford_init(&welford256);
-    for (int j = 0; j < 100000; j++){
+    for (int j = 0; j < 1; j++){
         uint64_t start = x86_64_rtdsc();
         sha3_512(output512, input, len/8);
         uint64_t end = x86_64_rtdsc();
         welford_update(&welford512,(long double) (end - start)/(len/8));
     }
-    for (int j = 0; j < 100000; j++){
+    for (int j = 0; j < 1; j++){
         uint64_t start = x86_64_rtdsc();
         sha3_384(output384, input, len/8);
         uint64_t end = x86_64_rtdsc();
         welford_update(&welford384,(long double) (end - start)/(len/8));
     }
-    for (int j = 0; j < 100000; j++){
+    for (int j = 0; j < 1; j++){
         uint64_t start = x86_64_rtdsc();
         sha3_256(output256, input, len/8);
         uint64_t end = x86_64_rtdsc();

@@ -10,15 +10,7 @@
 //#if (defined HIGH_PERFORMANCE_X86_64)
 static inline
 uint64_t x86_64_rtdsc(void) {
-  unsigned long long result;
-    __asm__ __volatile__(
-        "rdtscp;"
-        "shl $32, %%rdx;"
-        "or %%rdx, %%rax"
-        : "=a"(result)
-        :
-        : "%rcx", "%rdx");
-  return result;
+  return 0;
 }
 //#endif
 
