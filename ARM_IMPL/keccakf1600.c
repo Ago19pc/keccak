@@ -95,7 +95,7 @@ void KeccakF1600_StateXORBytes(keccak_state_t *state, const unsigned char *data,
     state->a24 = stateWords[24];
 }
 
-void keccakF1600_StatePermute(keccak_state_t * state){
+void KeccakF1600_StatePermute(keccak_state_t * state){
     ALIGN(32) uint64_t round_constants[24] = {
             0x0000000000000001,
             0x0000000000008082,
