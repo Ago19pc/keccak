@@ -123,9 +123,9 @@ void KeccakF1600_StatePermute(keccak_state_t * state){
             0x8000000080008008
     };
     uint64_t *currentStateWord = (uint64_t *)state;
-    uint64x2x4_t s0 = vld4q_u64(currentStateWord);
-    uint64x2x4_t s1 = vld4q_u64(currentStateWord + 8);
-    uint64x2x4_t s2 = vld4q_u64(currentStateWord + 16);
+    uint64x2x4_t s0 = vld1q_u64_x4(currentStateWord);
+    uint64x2x4_t s1 = vld1q_u64_x4(currentStateWord + 8);
+    uint64x2x4_t s2 = vld1q_u64_x4(currentStateWord + 16);
     uint64x2_t s3 = vld1q_u64(currentStateWord + 24); //forse segfault perché s3 è un solo elemento?
     for (uint64_t i = 0; i < 24; i++) {
         //theta
@@ -268,8 +268,8 @@ void KeccakF1600_StatePermute(keccak_state_t * state){
         ((uint64_t*)(&roundConstant))[0] = round_constants[i]; //forse segfault perché roundConstant va inizializzato prima?
         ((uint64x2_t*)(&s0))[0] = veorq_u64(((uint64x2_t*)(&s0))[0], roundConstant);
     }
-    vst4q_u64(currentStateWord, s0);
-    vst4q_u64(currentStateWord + 8, s1);
-    vst4q_u64(currentStateWord + 16, s2);
+    vst1q_u64_x4(currentStateWord, s0);
+    vst1q_u64_x4(currentStateWord + 8, s1);
+    vst1q_u64_x4(currentStateWord + 16, s2);
     vst1q_u64(currentStateWord + 24, s3);
 }
