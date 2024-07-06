@@ -8,11 +8,28 @@
 #include <stdio.h>
 
 //#if (defined HIGH_PERFORMANCE_X86_64)
+
+/*
 static inline
 uint64_t x86_64_rtdsc(void) {
-  return 0;
+  unsigned long long result;
+    __asm__ __volatile__(
+        "rdtscp;"
+        "shl $32, %%rdx;"
+        "or %%rdx, %%rax"
+        : "=a"(result)
+        :
+        : "%rcx", "%rdx");
+  return result;
 }
 //#endif
+*/
+static inline
+uint64_t arm_rtdsc(void) {
+	uint64_t value;
+	asm volatile ("mrs %0, cntvct_el0" : "=r"(value));
+	return value;
+}
 
 typedef struct {
      double mean;
