@@ -203,7 +203,8 @@ void KeccakF1600_StatePermute(keccak_state_t * state){
         ((uint64_t*)(&s2))[3] = temp1 << 55 | temp1 >> 9;
         temp1 = ((uint64_t*)(&s3))[0]; // 11
         
-	    vsetq_lane_u64(temp2 << 2 | temp2 >> 62, s3, 0);
+
+	    s3 = vsetq_lane_u64(temp2 << 2 | temp2 >> 62, s3, 0);
 	    vsetq_lane_u64(0, s3, 1);
 
         temp2 = ((uint64_t*)(&s0))[1]; // 12
