@@ -128,24 +128,6 @@ void KeccakF1600_StatePermute(keccak_state_t * state){
     uint64x2x4_t s2 = vld1q_u64_x4(currentStateWord + 16);
     uint64x2_t s3 = vld1q_u64(currentStateWord + 24); //forse segfault perché s3 è un solo elemento?
 
-    /*
-    for (int i = 0; i < 8; i++){
-        printf("s0[%d][%d] %d\n", i/2, i%2, ((uint64_t*)(&s0))[i]);
-    }
-
-    for (int i = 0; i < 8; i++){
-        printf("s1[%d][%d] %d\n", i/2, i%2, ((uint64_t*)(&s1))[i]);
-    }
-
-    for (int i = 0; i < 8; i++){
-        printf("s2[%d][%d] %d\n", i/2, i%2, ((uint64_t*)(&s2))[i]);
-    }
-
-    printf("s3 %d\n", s3);
-    fflush(stdout);
-    //while(1){}
-     */
-
     for (uint64_t i = 0; i < 24; i++) {
         //theta
         uint64x2_t v0 = veorq_u64(((uint64x2_t*)(&s0))[0], ((uint64x2_t*)(&s1))[2]);
@@ -194,33 +176,14 @@ void KeccakF1600_StatePermute(keccak_state_t * state){
         ((uint64x2_t*)(&s2))[3] = veorq_u64(((uint64x2_t*)(&s2))[3], v7);
         s3 = veorq_u64(s3, v7);
 
-        /*
-        printf("END THETA\n");
-        for (int i = 0; i < 8; i++){
-            printf("s0[%d][%d] %lld\n", i/2, i%2, ((uint64_t*)(&s0))[i]);
-        }
-
-        for (int i = 0; i < 8; i++){
-            printf("s1[%d][%d] %lld\n", i/2, i%2, ((uint64_t*)(&s1))[i]);
-        }
-
-        for (int i = 0; i < 8; i++){
-            printf("s2[%d][%d] %lld\n", i/2, i%2, ((uint64_t*)(&s2))[i]);
-        }
-
-        printf("s3 %lld\n", s3);
-        fflush(stdout);
-	*/
+        
         
         
 
         //ro pi
         uint64_t temp1 = ((uint64_t*)(&s1))[4]; // 1 CORRETTO
         ((uint64_t*)(&s1))[4] = ((uint64_t*)(&s0))[2] << 1 | ((uint64_t*)(&s0))[2] >> 63;
-        
-	//printf("s0[2]: %lld, %d \n", ((uint64_t*)(&s0))[2], ((uint64_t*)(&s0))[2]);
-	
-	uint64_t temp2 = ((uint64_t*)(&s0))[7]; // 2
+	    uint64_t temp2 = ((uint64_t*)(&s0))[7]; // 2
         ((uint64_t*)(&s0))[7] = temp1 << 3 | temp1 >> 61;
         temp1 = ((uint64_t*)(&s1))[6]; // 3
         ((uint64_t*)(&s1))[6] = temp2 << 6 | temp2 >> 58;
@@ -240,24 +203,10 @@ void KeccakF1600_StatePermute(keccak_state_t * state){
         ((uint64_t*)(&s2))[3] = temp1 << 55 | temp1 >> 9;
         temp1 = ((uint64_t*)(&s3))[0]; // 11
         
-	//printf("temp2: %lld\n", temp2);
-	
-	//printf("temp2 shift2: %lld\n", temp2 << 2 | temp2 >> 62);
 
-	//printf("s3 pre: %lld\n", s3);
-	//printf("s3[1] pre: %lld\n", ((uint64_t*)(&s3))[1]);
-
-	//fflush(stdout);
-
-	temp2 = temp2 << 2 | temp2 >> 62;
-	
-	
-	s3 = vsetq_lane_u64(temp2, s3, 0);
-	vsetq_lane_u64(0, s3, 1);
-	//printf("s3 post: %lld\n", vgetq_lane_u64(s3,0));
-	//printf("s3[1] post: %lld\n", ((uint64_t*)(&s3))[1]  );
-
-	//fflush(stdout);
+	    temp2 = temp2 << 2 | temp2 >> 62;
+	    s3 = vsetq_lane_u64(temp2, s3, 0);
+	    vsetq_lane_u64(0, s3, 1);
 
         temp2 = ((uint64_t*)(&s0))[1]; // 12
         ((uint64_t*)(&s0))[1] = temp1 << 14 | temp1 >> 50;
@@ -283,34 +232,7 @@ void KeccakF1600_StatePermute(keccak_state_t * state){
         ((uint64_t*)(&s1))[2] = temp1 << 61 | temp1 >> 3;
         temp1 = ((uint64_t*)(&s0))[5]; // 23
         ((uint64_t*)(&s0))[5] = temp2 << 20 | temp2 >> 44;
-
-	
-	//printf("temp1: %lld\n", temp1);
-
-
         ((uint64_t*)(&s0))[2] = temp1 << 44 | temp1 >> 20;
-
-	/*
-        printf("END RHO+PI\n");
-        for (int i = 0; i < 8; i++){
-            printf("s0[%d][%d] %lld\n", i/2, i%2, ((uint64_t*)(&s0))[i]);
-        }
-
-        for (int i = 0; i < 8; i++){
-            printf("s1[%d][%d] %lld\n", i/2, i%2, ((uint64_t*)(&s1))[i]);
-        }
-
-        for (int i = 0; i < 8; i++){
-            printf("s2[%d][%d] %lld\n", i/2, i%2, ((uint64_t*)(&s2))[i]);
-        }
-
-        printf("s3 %lld\n", vgetq_lane_u64(s3, 0));
-
-        fflush(stdout);
-
-        while(1){}
-	*/
-
 
         //chi
         v18 = vextq_u64(((uint64x2_t*)(&s1))[3], s3, 1);
@@ -362,46 +284,10 @@ void KeccakF1600_StatePermute(keccak_state_t * state){
         ((uint64_t*)(&roundConstant))[0] = round_constants[i]; //forse segfault perché roundConstant va inizializzato prima?
         ((uint64x2_t*)(&s0))[0] = veorq_u64(((uint64x2_t*)(&s0))[0], roundConstant);
 
-        /*
-        printf("END IOTA\n");
-        for (int i = 0; i < 8; i++){
-            printf("s0[%d][%d] %d\n", i/2, i%2, ((uint64_t*)(&s0))[i]);
-        }
 
-        for (int i = 0; i < 8; i++){
-            printf("s1[%d][%d] %d\n", i/2, i%2, ((uint64_t*)(&s1))[i]);
-        }
-
-        for (int i = 0; i < 8; i++){
-            printf("s2[%d][%d] %d\n", i/2, i%2, ((uint64_t*)(&s2))[i]);
-        }
-
-        printf("s3 %d\n", s3);
-        fflush(stdout);
-
-        while(1){}
-         */
 
     }
-    /*
-    printf("PRE STORE\n");
-    for (int i = 0; i < 8; i++){
-        printf("s0[%d][%d] %d\n", i/2, i%2, ((uint64_t*)(&s0))[i]);
-    }
 
-    for (int i = 0; i < 8; i++){
-        printf("s1[%d][%d] %d\n", i/2, i%2, ((uint64_t*)(&s1))[i]);
-    }
-
-    for (int i = 0; i < 8; i++){
-        printf("s2[%d][%d] %d\n", i/2, i%2, ((uint64_t*)(&s2))[i]);
-    }
-
-    printf("s3 %d\n", s3);
-    fflush(stdout);
-
-    while(1){}
-    */
     vst1q_u64_x4(currentStateWord, s0);
     vst1q_u64_x4(currentStateWord + 8, s1);
     vst1q_u64_x4(currentStateWord + 16, s2);
