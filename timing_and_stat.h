@@ -9,7 +9,7 @@
 
 //#if (defined HIGH_PERFORMANCE_X86_64)
 
-/*
+
 static inline
 uint64_t x86_64_rtdsc(void) {
   unsigned long long result;
@@ -23,13 +23,14 @@ uint64_t x86_64_rtdsc(void) {
   return result;
 }
 //#endif
-*/
+/*
 static inline
 uint64_t arm_rtdsc(void) {
 	uint64_t value;
 	asm volatile ("mrs %0, cntvct_el0" : "=r"(value));
 	return value;
 }
+*/
 
 typedef struct {
      double mean;

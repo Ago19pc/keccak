@@ -15,3 +15,5 @@ void KeccakF1600_StateExtractBytes(keccak_state_t *state, unsigned char *data,
 void KeccakF1600_StateXORBytes(keccak_state_t *state, const unsigned char *data,
                                unsigned int offset, unsigned int length);
 void KeccakF1600_StatePermute(keccak_state_t *state);
+
+void KeccakF1600_StatePermute_Light(keccak_state_t *state, __m256i *a0, __m256i *a1, __m256i *a2, __m256i *a3, __m256i *a4, __m256i *c4, __m256i *a44);
