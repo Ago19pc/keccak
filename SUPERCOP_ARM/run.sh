@@ -1,3 +1,5 @@
 clear
-gcc -mavx2 -mavx512vl -O2 -pg -no-pie -fno-builtin main.c -o test -lm
+gcc -c main.c -o main.o
+as keccak.s -o keccak.o
+gcc keccak.o main.o -o test -lm
 ./test

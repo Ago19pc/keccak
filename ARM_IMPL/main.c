@@ -191,6 +191,11 @@ void testValidator() {
 
 int main () {
 
+
+    long long int frequency;
+    asm volatile ( "mrs %0, cntfrq_el0" : "=r"(frequency) );
+    printf("Frequency: %lld\n", frequency);
+
     size_t len = 32768;
     uint8_t input[len/8];
     uint8_t output512[64], output384[48], output256[32];
@@ -207,30 +212,36 @@ int main () {
     welford_init(&welford512);
     welford_init(&welford384);
     welford_init(&welford256);
-    for (int j = 0; j < 1; j++){
+
+    printf("BEGIN SHA3_512\n");
+    for (int j = 0; j < 1000000; j++){
         uint64_t start = arm_rtdsc();
         sha3_512(output512, input, len/8);
         uint64_t end = arm_rtdsc();
         welford_update(&welford512,(long double) (end - start)/(len/8));
     }
-    for (int j = 0; j < 1; j++){
+    
+    printf("END SHA3_512\n");
+
+    for (int j = 0; j < 100000; j++){
         uint64_t start = arm_rtdsc();
         sha3_384(output384, input, len/8);
         uint64_t end = arm_rtdsc();
         welford_update(&welford384,(long double) (end - start)/(len/8));
     }
-    for (int j = 0; j < 1; j++){
+    for (int j = 0; j < 100000; j++){
         uint64_t start = arm_rtdsc();
         sha3_256(output256, input, len/8);
         uint64_t end = arm_rtdsc();
         welford_update(&welford256,(long double) (end - start)/(len/8));
-    }
+    } 
     printf("SHA3-512: ");
     welford_print(welford512);
     printf("\n");
     for(int i = 0; i < 64; i++){
         printf("%x", output512[i]);
     }
+    
     printf("\n");
     printf("SHA3-384: ");
     welford_print(welford384);
@@ -245,6 +256,7 @@ int main () {
     for(int i = 0; i < 32; i++){
         printf("%x", output256[i]);
     }
+    
     printf("\n");
     system("pause");
    //testValidator();

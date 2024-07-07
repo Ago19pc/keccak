@@ -14,15 +14,15 @@ http://creativecommons.org/publicdomain/zero/1.0/
 */
 #include "KeccakSponge.c"
 
-int crypto_hash512( unsigned char *out, const unsigned char *in, unsigned long long inlen )
+int sha3_512( unsigned char *out, const unsigned char *in, unsigned long long inlen )
 {
     return Sponge(576, 1024, in, inlen, 0x06, out, 64);
 }
-int crypto_hash384( unsigned char *out, const unsigned char *in, unsigned long long inlen )
+int sha3_384( unsigned char *out, const unsigned char *in, unsigned long long inlen )
 {
     return Sponge(832, 768, in, inlen, 0x06, out, 48);
 }
-int crypto_hash256( unsigned char *out, const unsigned char *in, unsigned long long inlen )
+int sha3_256( unsigned char *out, const unsigned char *in, unsigned long long inlen )
 {
     return Sponge(1088, 512, in, inlen, 0x06, out, 32);
 }
