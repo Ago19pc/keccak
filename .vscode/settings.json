@@ -6,7 +6,8 @@
         "keccakf1600.h": "c",
         "fips202.h": "c",
         "type_traits": "c",
-        "fastloopabsorb": "c"
+        "fastloopabsorb": "c",
+        "immintrin.h": "c"
     },
     "C_Cpp.dimInactiveRegions": false
 }
