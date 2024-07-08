@@ -246,7 +246,6 @@ int main () {
         printf("%x", output256[i]);
     }
     printf("\n");
-    system("pause");
    //testValidator();
     return 0;
 }
