@@ -169,19 +169,9 @@ void testValidator() {
             input[i] = correspondingByte;
         }
 
-        printf("PRESHA\n");
         sha3_512(output, input, len/8);
-        printf("POSTSHA\n");
         
-        printf("len: %d\n", len);
-        /*
-        printf("EXPECTED: %s \n", expected_output);
-        printf("ACTUAL: ");
-        for (int i = 0; i < 64; i++){
-            printf("%x", output[i]);
-        }
-        printf("\n");
-        */
+        
         
         memcmp(output, expected_output, 64) ? printf("SUCCESS\n") : printf("FAILURE\n");
         printf("\n");
@@ -213,26 +203,24 @@ int main () {
     welford_init(&welford384);
     welford_init(&welford256);
 
-    printf("BEGIN SHA3_512\n");
     for (int j = 0; j < 1000000; j++){
-        uint64_t start = arm_rtdsc();
+        uint64_t start = getTime();
         sha3_512(output512, input, len/8);
-        uint64_t end = arm_rtdsc();
+        uint64_t end = getTime();
         welford_update(&welford512,(long double) (end - start)/(len/8));
     }
     
-    printf("END SHA3_512\n");
 
     for (int j = 0; j < 100000; j++){
-        uint64_t start = arm_rtdsc();
+        uint64_t start = getTime();
         sha3_384(output384, input, len/8);
-        uint64_t end = arm_rtdsc();
+        uint64_t end = getTime();
         welford_update(&welford384,(long double) (end - start)/(len/8));
     }
     for (int j = 0; j < 100000; j++){
-        uint64_t start = arm_rtdsc();
+        uint64_t start = getTime();
         sha3_256(output256, input, len/8);
-        uint64_t end = arm_rtdsc();
+        uint64_t end = getTime();
         welford_update(&welford256,(long double) (end - start)/(len/8));
     } 
     printf("SHA3-512: ");

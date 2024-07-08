@@ -166,33 +166,33 @@ int main () {
     welford_init(&welfordshake256);
     welford_init(&welfordshake128);
     for (int j = 0; j < 100000; j++){
-        uint64_t start = x86_64_rtdsc();
+        uint64_t start = getTime();
         crypto_hash512(&output512, input, len/8);
-        uint64_t end = x86_64_rtdsc();
+        uint64_t end = getTime();
         welford_update(&welford512,(long double) (end - start)/(len/8));
     }
     for (int j = 0; j < 100000; j++){
-        uint64_t start = x86_64_rtdsc();
+        uint64_t start = getTime();
         crypto_hash384(output384, input, len/8);
-        uint64_t end = x86_64_rtdsc();
+        uint64_t end = getTime();
         welford_update(&welford384,(long double) (end - start)/(len/8));
     }
     for (int j = 0; j < 100000; j++){
-        uint64_t start = x86_64_rtdsc();
+        uint64_t start = getTime();
         crypto_hash256(output256, input, len/8);
-        uint64_t end = x86_64_rtdsc();
+        uint64_t end = getTime();
         welford_update(&welford256,(long double) (end - start)/(len/8));
     }
     for (int j = 0; j < 100000; j++){
-        uint64_t start = x86_64_rtdsc();
+        uint64_t start = getTime();
         crypto_hash_shake256(outputshake256, input, len/8);
-        uint64_t end = x86_64_rtdsc();
+        uint64_t end = getTime();
         welford_update(&welfordshake256,(long double) (end - start)/(len/8));
     }
     for (int j = 0; j < 100000; j++){
-        uint64_t start = x86_64_rtdsc();
+        uint64_t start = getTime();
         crypto_hash_shake128(outputshake128, input, len/8);
-        uint64_t end = x86_64_rtdsc();
+        uint64_t end = getTime();
         welford_update(&welfordshake128,(long double) (end - start)/(len/8));
     }
     printf("SHA3-512: ");

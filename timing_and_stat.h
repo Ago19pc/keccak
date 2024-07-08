@@ -11,7 +11,7 @@
 
 
 static inline
-uint64_t x86_64_rtdsc(void) {
+uint64_t getTime(void) {
   unsigned long long result;
     __asm__ __volatile__(
         "rdtscp;"
@@ -25,7 +25,7 @@ uint64_t x86_64_rtdsc(void) {
 //#endif
 /*
 static inline
-uint64_t arm_rtdsc(void) {
+uint64_t getTime(void) {
 	uint64_t value;
 	asm volatile ("mrs %0, cntvct_el0" : "=r"(value));
 	return value;

@@ -7,7 +7,9 @@
         "fips202.h": "c",
         "type_traits": "c",
         "fastloopabsorb": "c",
-        "immintrin.h": "c"
+        "immintrin.h": "c",
+        "timing_and_stat.h": "c",
+        "stdio.h": "c"
     },
     "C_Cpp.dimInactiveRegions": false
 }
