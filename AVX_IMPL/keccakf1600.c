@@ -191,17 +191,17 @@ void KeccakF1600_StatePermute(keccak_state_t *state)
         /* D[x] = C[x - 1] ^ rot(  C[x + 1], 1) */
 
         /* (b0, b04) = C[4, 0, 1, 2, 3]. */
-        b0 = _mm256_permute4x64_epi64(r0, _MM_SHUFFLE(2, 1, 0, 3));       /*C[3, 0, 1, 2]*/
+        b0 = _mm256_permute4x64_epi64(r0, 147);       /*C[3, 0, 1, 2]*/
         b04 = b0;                           /*C[3]*/
-        b0 = _mm256_blend_epi32(b0, r1, _MM_SHUFFLE(0, 0, 0, 3));     /*C[4, 0, 1, 2]*/
+        b0 = _mm256_blend_epi32(b0, r1, 3);     /*C[4, 0, 1, 2]*/
 
         r0 = _mm256_xor_si256(_mm256_slli_epi64(r0, 1), _mm256_srli_epi64(r0, 63));                    /*rot(C[0, 1, 2, 3])*/
         r1 = _mm256_xor_si256(_mm256_slli_epi64(r1, 1), _mm256_srli_epi64(r1, 63));                    /*rot(C[4])*/
         /* (r1, r0) = rot(C[1, 2, 3, 4, 0]). */
 
-        r1 = _mm256_blend_epi32(r0, r1, _MM_SHUFFLE(0, 0, 0, 3));     /*rot(C[4, 1, 2, 3])*/
+        r1 = _mm256_blend_epi32(r0, r1, 3);     /*rot(C[4, 1, 2, 3])*/
 
-        r1 = _mm256_permute4x64_epi64(r1, _MM_SHUFFLE(0, 3, 2, 1));       /*rot(C[1, 2, 3, 4])*/
+        r1 = _mm256_permute4x64_epi64(r1, 57);       /*rot(C[1, 2, 3, 4])*/
 
 
         /* (b0, b04) = D[0, 1, 2, 3, 4]. */
@@ -231,29 +231,29 @@ void KeccakF1600_StatePermute(keccak_state_t *state)
         a44 = _mm256_xor_si256(_mm256_slli_epi64(a44, 14),_mm256_srli_epi64(a44, 50));
 
         /* Now b0..b4 are columns a[0..3, col], b04..b44 are last elements a[4, 0..4] of those columns. */
-        r0 = _mm256_permute4x64_epi64(b0, _MM_SHUFFLE(0, 1, 3, 0));
+        r0 = _mm256_permute4x64_epi64(b0, 28);
         r1 = _mm256_broadcastq_epi64(_mm256_castsi256_si128(c4));
         b04 = _mm256_permute2x128_si256(b0, b0, 0x11);
-        b0 = _mm256_blend_epi32(r0, r1, _MM_SHUFFLE(3, 0, 0, 0));
+        b0 = _mm256_blend_epi32(r0, r1, 192);
 
-        r0 = _mm256_permute4x64_epi64(b1, _MM_SHUFFLE(0, 2, 3, 1));
+        r0 = _mm256_permute4x64_epi64(b1, 45);
         r1 = _mm256_unpackhi_epi64(c4, c4);
-        b14 = _mm256_permute4x64_epi64(b1, _MM_SHUFFLE(3, 3, 3, 3));
-        b1 = _mm256_blend_epi32(r0, r1, _MM_SHUFFLE(0, 0, 3, 0));
+        b14 = _mm256_permute4x64_epi64(b1, 255);
+        b1 = _mm256_blend_epi32(r0, r1, 12);
 
-        b2 = _mm256_permute4x64_epi64(b2, _MM_SHUFFLE(1, 3, 0, 2));
+        b2 = _mm256_permute4x64_epi64(b2, 114);
         b24 = _mm256_permute2x128_si256(c4, c4, 0x11);
 
-        r0 = _mm256_permute4x64_epi64(b3, _MM_SHUFFLE(2, 0, 1, 3));
-        r1 = _mm256_permute4x64_epi64(c4, _MM_SHUFFLE(3, 3, 3, 3));
-        b34 = b3; \
-        b3 = _mm256_blend_epi32(r0, r1, _MM_SHUFFLE(0, 3, 0, 0));
+        r0 = _mm256_permute4x64_epi64(b3, 135);
+        r1 = _mm256_permute4x64_epi64(c4, 255);
+        b34 = b3;
+        b3 = _mm256_blend_epi32(r0, r1, 48);
 
-        r0 = _mm256_permute4x64_epi64(b4, _MM_SHUFFLE(3, 0, 2, 1));
+        r0 = _mm256_permute4x64_epi64(b4, 201);
         r1 = _mm256_broadcastq_epi64(_mm256_castsi256_si128(a44));
         b44 = _mm256_unpackhi_epi64(b4, b4);
 /*      b44 = r0; */
-        b4 = _mm256_blend_epi32(r0, r1, _MM_SHUFFLE(0, 0, 0, 3));
+        b4 = _mm256_blend_epi32(r0, r1, 3);
 
         /* A[y, x] = B[y, x] ^ (~B[y, x + 1] & B[y, x + 2]) */
         /* A[0, 0] = A[0, 0] ^ RC */
