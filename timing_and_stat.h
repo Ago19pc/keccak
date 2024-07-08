@@ -9,7 +9,14 @@
 
 //#if (defined HIGH_PERFORMANCE_X86_64)
 
-
+#ifdef defined(__arm__) ||defined(__aarch64__)
+static inline
+uint64_t getTime(void) {
+	uint64_t value;
+	asm volatile ("mrs %0, cntvct_el0" : "=r"(value));
+	return value;
+}
+#elif defined(__x86_64__) || defined(_M_X64) || defined(__i386) || defined(_M_IX86)
 static inline
 uint64_t getTime(void) {
   unsigned long long result;
@@ -22,15 +29,9 @@ uint64_t getTime(void) {
         : "%rcx", "%rdx");
   return result;
 }
-//#endif
-/*
-static inline
-uint64_t getTime(void) {
-	uint64_t value;
-	asm volatile ("mrs %0, cntvct_el0" : "=r"(value));
-	return value;
-}
-*/
+#endif
+
+
 
 typedef struct {
      double mean;
