@@ -9,7 +9,7 @@
 
 //#if (defined HIGH_PERFORMANCE_X86_64)
 
-#ifdef defined(__arm__) ||defined(__aarch64__)
+#if defined(__arm__) || defined(__aarch64__)
 static inline
 uint64_t getTime(void) {
 	uint64_t value;
