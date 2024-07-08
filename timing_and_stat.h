@@ -1,7 +1,3 @@
-/* Simple, self-contained library for accurate timing measurements on x86_64 */
-/* Author: Alessandro Barenghi <alessandro.barenghi@polimi.it>               */
-/* This code is made available as Public Domain (Creative-Commons-Zero) */
-
 #pragma once
 #include <math.h>
 #include <stdint.h>

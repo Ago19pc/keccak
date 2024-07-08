@@ -4,9 +4,22 @@
 #include "fips202.h"
 #include "keccakf1600.c"
 
+
 static void keccak_init(keccak_state_t *state)
 {
    memset(state, 0, sizeof(keccak_state_t));
+   left_rotation_constant_a0 = _mm256_setr_epi64x( 0,  1, 62, 28);
+   right_rotation_constant_a0 = _mm256_setr_epi64x(64, 63, 2, 36);
+   left_rotation_constant_a1 = _mm256_setr_epi64x(36, 44,  6, 55);
+   right_rotation_constant_a1 = _mm256_setr_epi64x(28, 20, 58, 9);
+   left_rotation_constant_a2 = _mm256_setr_epi64x( 3, 10, 43, 25);
+   right_rotation_constant_a2 = _mm256_setr_epi64x(61, 54, 21, 39);
+   left_rotation_constant_a3 = _mm256_setr_epi64x(41, 45, 15, 21);
+   right_rotation_constant_a3 = _mm256_setr_epi64x(23, 19, 49, 43);
+   left_rotation_constant_a4 = _mm256_setr_epi64x(18, 2, 61, 56);
+   right_rotation_constant_a4 = _mm256_setr_epi64x(46, 62, 3, 8);
+   left_rotation_constant_c4 = _mm256_setr_epi64x(27, 20, 39,  8);
+   right_rotation_constant_c4 = _mm256_setr_epi64x(37, 44, 25, 56);
 }
 
 /** 
@@ -19,44 +32,8 @@ static size_t keccak_absorb(keccak_state_t *state, uint32_t rate, const uint8_t 
    
    // FASTLOOP
    if (rate % 8 == 0 && inlen >= rate) {
-      ALIGN(32) __m256i round_constants[24] = {
-               {0x8000000080008008ull},    //round 23
-               {0x0000000080000001ull},
-               {0x8000000000008080ull},
-               {0x8000000080008081ull},
-               {0x800000008000000Aull},
-               {0x000000000000800Aull},
-               {0x8000000000000080ull},
-               {0x8000000000008002ull},
-               {0x8000000000008003ull},
-               {0x8000000000008089ull},
-               {0x800000000000008Bull},
-               {0x000000008000808Bull},
-               {0x000000008000000Aull},
-               {0x0000000080008009ull},
-               {0x0000000000000088ull},
-               {0x000000000000008Aull},
-               {0x8000000000008009ull},
-               {0x8000000080008081ull},
-               {0x0000000080000001ull},
-               {0x000000000000808Bull},
-               {0x8000000080008000ull},
-               {0x800000000000808Aull},
-               {0x0000000000008082ull},
-               {0x0000000000000001ull},    //round 0
-            };
-      __m256i left_rotation_constant_a0 = _mm256_setr_epi64x( 0,  1, 62, 28);
-      __m256i right_rotation_constant_a0 = _mm256_setr_epi64x(64, 63, 2, 36);
-      __m256i left_rotation_constant_a1 = _mm256_setr_epi64x(36, 44,  6, 55);
-      __m256i right_rotation_constant_a1 = _mm256_setr_epi64x(28, 20, 58, 9);
-      __m256i left_rotation_constant_a2 = _mm256_setr_epi64x( 3, 10, 43, 25);
-      __m256i right_rotation_constant_a2 = _mm256_setr_epi64x(61, 54, 21, 39);
-      __m256i left_rotation_constant_a3 = _mm256_setr_epi64x(41, 45, 15, 21);
-      __m256i right_rotation_constant_a3 = _mm256_setr_epi64x(23, 19, 49, 43);
-      __m256i left_rotation_constant_a4 = _mm256_setr_epi64x(18, 2, 61, 56);
-      __m256i right_rotation_constant_a4 = _mm256_setr_epi64x(46, 62, 3, 8);
-      __m256i left_rotation_constant_c4 = _mm256_setr_epi64x(27, 20, 39,  8);
-      __m256i right_rotation_constant_c4 = _mm256_setr_epi64x(37, 44, 25, 56);
+      
+      
       ptrdiff_t       round_i;
       __m256i a04, a14, a24, a34;
       __m256i b0, b1, b2, b3, b4;

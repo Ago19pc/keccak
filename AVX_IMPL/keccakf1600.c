@@ -18,6 +18,47 @@
 #endif
 
 
+ALIGN(32) __m256i round_constants[24] = {
+               {0x8000000080008008ull},    //round 23
+               {0x0000000080000001ull},
+               {0x8000000000008080ull},
+               {0x8000000080008081ull},
+               {0x800000008000000Aull},
+               {0x000000000000800Aull},
+               {0x8000000000000080ull},
+               {0x8000000000008002ull},
+               {0x8000000000008003ull},
+               {0x8000000000008089ull},
+               {0x800000000000008Bull},
+               {0x000000008000808Bull},
+               {0x000000008000000Aull},
+               {0x0000000080008009ull},
+               {0x0000000000000088ull},
+               {0x000000000000008Aull},
+               {0x8000000000008009ull},
+               {0x8000000080008081ull},
+               {0x0000000080000001ull},
+               {0x000000000000808Bull},
+               {0x8000000080008000ull},
+               {0x800000000000808Aull},
+               {0x0000000000008082ull},
+               {0x0000000000000001ull},    //round 0
+            };
+
+      __m256i left_rotation_constant_a0;
+      __m256i right_rotation_constant_a0;
+      __m256i left_rotation_constant_a1;
+      __m256i right_rotation_constant_a1;
+      __m256i left_rotation_constant_a2;
+      __m256i right_rotation_constant_a2;
+      __m256i left_rotation_constant_a3;
+      __m256i right_rotation_constant_a3;
+      __m256i left_rotation_constant_a4;
+      __m256i right_rotation_constant_a4;
+      __m256i left_rotation_constant_c4;
+      __m256i right_rotation_constant_c4;
+
+
 void KeccakF1600_StateExtractBytes(keccak_state_t *state, unsigned char *data,
                                    unsigned int offset, unsigned int length)
 {
@@ -82,6 +123,8 @@ void KeccakF1600_StateXORBytes(keccak_state_t *state, const unsigned char *data,
 
 void KeccakF1600_StatePermute(keccak_state_t *state)
 {
+    /*
+    
     // al contrario perché l'assembly inizia dall'ultima keccak_rc e decrementa il contatore delle rc, quindi la prima deve essere keccak_rc[23] e l'ultima keccak_rc[0]
     ALIGN(32) __m256i round_constants[24] = {
             {0x8000000080008008ull},    //round 23
@@ -121,6 +164,7 @@ void KeccakF1600_StatePermute(keccak_state_t *state)
     __m256i right_rotation_constant_a4 = _mm256_setr_epi64x(46, 62, 3, 8);
     __m256i left_rotation_constant_c4 = _mm256_setr_epi64x(27, 20, 39,  8);
     __m256i right_rotation_constant_c4 = _mm256_setr_epi64x(37, 44, 25, 56);
+    */
     ptrdiff_t       round_i;
     __m256i a0, a1, a2, a3, a4, c4;
     __m256i a04, a14, a24, a34, a44;
