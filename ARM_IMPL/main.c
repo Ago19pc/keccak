@@ -203,7 +203,7 @@ int main () {
     welford_init(&welford384);
     welford_init(&welford256);
 
-    for (int j = 0; j < 1000000; j++){
+    for (int j = 0; j < 100000; j++){
         uint64_t start = getTime();
         sha3_512(output512, input, len/8);
         uint64_t end = getTime();

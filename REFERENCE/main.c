@@ -167,7 +167,7 @@ int main () {
     welford_init(&welfordshake256);
     welford_init(&welfordshake128);
     
-    for (int j = 0; j < 1000000; j++){
+    for (int j = 0; j < 100000; j++){
         uint64_t start = getTime();
         sha3_512(output512, input, len/8);
         uint64_t end = getTime();
