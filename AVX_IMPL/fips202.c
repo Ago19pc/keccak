@@ -26,8 +26,7 @@ static void keccak_init(keccak_state_t *state)
  * @param rate in bytes
  * @param inlen in bytes
 */
-static size_t keccak_absorb(keccak_state_t *state, uint32_t rate, const uint8_t *input,
-                              size_t inlen)
+static size_t keccak_absorb(keccak_state_t *state, uint32_t rate, const uint8_t *input, size_t inlen)
 {
    if (rate % 8 == 0 && inlen >= rate) {
       ptrdiff_t       round_i;
