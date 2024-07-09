@@ -142,39 +142,74 @@ char* byteToHex(uint8_t byte){
 
 
 void testValidator() {
-    
-    const char* fileName = "../sha-3bytetestvectors/SHA3_512LongMsg.rsp";
-    FILE* file = fopen(fileName, "r");
-    if (file == NULL){
-        printf("INVALID FILE\n");
-        return;
-    }
 
-    char inputString[30000];
-    int len = 0;
-    char expected_output[10000];
-    uint8_t output[64];
-    while (!feof(file)){
+    void testValidator() {
+        const char* fileNames[] = {
+                "../sha-3bytetestvectors/SHA3_256ShortMsg.rsp",
+                "../sha-3bytetestvectors/SHA3_256LongMsg.rsp",
+                "../sha-3bytetestvectors/SHA3_384ShortMsg.rsp",
+                "../sha-3bytetestvectors/SHA3_384LongMsg.rsp",
+                "../sha-3bytetestvectors/SHA3_512ShortMsg.rsp",
+                "../sha-3bytetestvectors/SHA3_512LongMsg.rsp"
+        };
+        for(int fileIndex = 0; fileIndex < 6; fileIndex++){
+            const char* fileName = fileNames[fileIndex];
+            FILE* file = fopen(fileName, "r");
+            if (file == NULL){
+                printf("INVALID FILE\n");
+                return;
+            }
+            void (*currentFunction)(uint8_t *, const uint8_t*, size_t);
+            int outputLength;
+            switch(fileIndex / 2) {
+                case 0:
+                    printf("SHA3-256 ");
+                    currentFunction = &sha3_256;
+                    outputLength = 32;
+                    break;
+                case 1:
+                    printf("SHA3-384 ");
+                    currentFunction = &sha3_384;
+                    outputLength = 48;
+                    break;
+                case 2:
+                    printf("SHA3-512 ");
+                    currentFunction = &sha3_512;
+                    outputLength = 64;
+                    break;
+            }
 
-        longmsg(file, inputString, &len, expected_output);
+            char inputString[30000];
+            int len = 0;
+            char expected_output[10000];
+            uint8_t output[outputLength];
 
+            int failed = 0;
 
-        uint8_t input[len/8];
-        for(int i = 0; i < len/8; i++){
-            char first = inputString[i*2];
-            char second = inputString[i*2+1];
-            uint8_t correspondingByte = 0;
-            correspondingByte += hexToInt(first)*16;
-            correspondingByte += hexToInt(second);
-            input[i] = correspondingByte;
+            while (!feof(file)){
+
+                longmsg(file, inputString, &len, expected_output);
+
+                uint8_t input[len/8];
+                for(int i = 0; i < len/8; i++){
+                    char first = inputString[i*2];
+                    char second = inputString[i*2+1];
+                    uint8_t correspondingByte = 0;
+                    correspondingByte += hexToInt(first)*16;
+                    correspondingByte += hexToInt(second);
+                    input[i] = correspondingByte;
+                }
+
+                currentFunction(output, input, len/8);
+                char converted_output[10000] = {0};
+
+                for(int i = 0; i < outputLength; i++) sprintf(converted_output + 2*i, "%02x", output[i]);
+
+                failed = (strncmp(converted_output, expected_output, outputLength) == 0 ? 0 : 1);
+            }
+            if (failed) printf("FAILED\n");
+            else printf("PASSED\n");
         }
-
-        sha3_512(output, input, len/8);
-        
-        
-        
-        memcmp(output, expected_output, 64) ? printf("SUCCESS\n") : printf("FAILURE\n");
-        printf("\n");
     }
 }
 
@@ -182,7 +217,7 @@ void testValidator() {
 int main () {
 
 
-    long long int frequency;
+    /*long long int frequency;
     asm volatile ( "mrs %0, cntfrq_el0" : "=r"(frequency) );
     printf("Frequency: %lld\n", frequency);
 
@@ -246,7 +281,7 @@ int main () {
     }
     
     printf("\n");
-    system("pause");
-   //testValidator();
+    system("pause");*/
+    testValidator();
     return 0;
 }
