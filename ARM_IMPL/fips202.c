@@ -9,8 +9,7 @@ static void keccak_init(keccak_state_t *state)
    memset(state, 0, sizeof(keccak_state_t));
 }
 
-static size_t keccak_absorb(keccak_state_t *state, uint32_t rate, const uint8_t *input,
-                              size_t inlen)
+static size_t keccak_absorb(keccak_state_t *state, uint32_t rate, const uint8_t *input, size_t inlen)
 {
    while (inlen >= rate) {
       KeccakF1600_StateXORBytes(state, input, 0, rate);
@@ -34,8 +33,7 @@ static void keccak_finalize(keccak_state_t *state, uint32_t rate, uint8_t paddin
    }
 }
 
-static void keccak_squeeze(uint8_t *out, size_t outlen,
-                               keccak_state_t *state, uint32_t rate)
+static void keccak_squeeze(uint8_t *out, size_t outlen, keccak_state_t *state, uint32_t rate)
 {
    size_t len = 0;
    while (outlen > 0) {
