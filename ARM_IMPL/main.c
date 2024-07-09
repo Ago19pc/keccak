@@ -140,10 +140,7 @@ char* byteToHex(uint8_t byte){
     return hex;
 }
 
-
 void testValidator() {
-
-    void testValidator() {
         const char* fileNames[] = {
                 "../sha-3bytetestvectors/SHA3_256ShortMsg.rsp",
                 "../sha-3bytetestvectors/SHA3_256LongMsg.rsp",
@@ -210,7 +207,6 @@ void testValidator() {
             if (failed) printf("FAILED\n");
             else printf("PASSED\n");
         }
-    }
 }
 
 
