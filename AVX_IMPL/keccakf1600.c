@@ -172,13 +172,27 @@ void KeccakF1600_StatePermute(keccak_state_t *state)
         a3 = _mm256_xor_si256(a3, b0);
         a4 = _mm256_xor_si256(a4, b0);
         //rho
-        b0 = _mm256_xor_si256(_mm256_sllv_epi64(a0, left_rotation_constant_a0), _mm256_srlv_epi64(a0, right_rotation_constant_a0));
-        b1 = _mm256_xor_si256(_mm256_sllv_epi64(a1, left_rotation_constant_a1), _mm256_srlv_epi64(a1, right_rotation_constant_a1));
-        b2 = _mm256_xor_si256(_mm256_sllv_epi64(a2, left_rotation_constant_a2), _mm256_srlv_epi64(a2, right_rotation_constant_a2));
-        b3 = _mm256_xor_si256(_mm256_sllv_epi64(a3, left_rotation_constant_a3), _mm256_srlv_epi64(a3, right_rotation_constant_a3));
-        b4 = _mm256_xor_si256(_mm256_sllv_epi64(a4, left_rotation_constant_a4), _mm256_srlv_epi64(a4, right_rotation_constant_a4));
-        c4 = _mm256_xor_si256(_mm256_sllv_epi64(c4, left_rotation_constant_c4), _mm256_srlv_epi64(c4, right_rotation_constant_c4));
-        a44 = _mm256_xor_si256(_mm256_slli_epi64(a44, 14),_mm256_srli_epi64(a44, 50));
+        r0 = _mm256_sllv_epi64(a0, left_rotation_constant_a0);
+        r1 = _mm256_srlv_epi64(a0, right_rotation_constant_a0);
+        r2 = _mm256_sllv_epi64(a1, left_rotation_constant_a1);
+        r3 = _mm256_srlv_epi64(a1, right_rotation_constant_a1);
+        b0 = _mm256_xor_si256(r0, r1);
+        r0 = _mm256_sllv_epi64(a2, left_rotation_constant_a2);
+        r1 = _mm256_srlv_epi64(a2, right_rotation_constant_a2);
+        b1 = _mm256_xor_si256(r2, r3);
+        r2 = _mm256_sllv_epi64(a3, left_rotation_constant_a3);
+        r3 = _mm256_srlv_epi64(a3, right_rotation_constant_a3);
+        b2 = _mm256_xor_si256(r0, r1);
+        r0 = _mm256_sllv_epi64(a4, left_rotation_constant_a4);
+        r1 = _mm256_srlv_epi64(a4, right_rotation_constant_a4);
+        b3 = _mm256_xor_si256(r2, r3);
+        r2 = _mm256_sllv_epi64(c4, left_rotation_constant_c4);
+        r3 = _mm256_srlv_epi64(c4, right_rotation_constant_c4);
+        b4 = _mm256_xor_si256(r0, r1);
+        r0 = _mm256_slli_epi64(a44, 14);
+        r1 = _mm256_srli_epi64(a44, 50);
+        c4 = _mm256_xor_si256(r2, r3);
+        a44 = _mm256_xor_si256(r0,r1);
         //pi. Traspone anche lo stato per velocizzare chi
         t0 = _mm256_castsi256_si128(c4);
         r0 = _mm256_permute4x64_epi64(b0, 28);
