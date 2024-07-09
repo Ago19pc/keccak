@@ -1,10 +1,3 @@
-#  CAVS 19.0
-#  "SHA3-512 ShortMsg" information for "SHA3AllBytes1-28-16"
-#  Length values represented in bits
-#  Generated on Thu Jan 28 13:32:47 2016
-
-[L = 512]
-
 Len = 0
 Msg = 00
 MD = a69f73cca23a9ac5c8b567dc185a756e97c982164fe25859e0d1dcc1475c80a615b2123af1f5f94c11e3e9402c3ac558f500199d95b6d3e301758586281dcd26
@@ -296,4 +289,3 @@ MD = 9e9e469ca9226cd012f5c9cc39c96adc22f420030fcee305a0ed27974e3c802701603dac873
 Len = 576
 Msg = 0ce9f8c3a990c268f34efd9befdb0f7c4ef8466cfdb01171f8de70dc5fefa92acbe93d29e2ac1a5c2979129f1ab08c0e77de7924ddf68a209cdfa0adc62f85c18637d9c6b33f4ff8
 MD = b018a20fcf831dde290e4fb18c56342efe138472cbe142da6b77eea4fce52588c04c808eb32912faa345245a850346faec46c3a16d39bd2e1ddb1816bc57d2da
-

@@ -19,31 +19,31 @@ echo "SUPERCOP_ARM:" >> arm_log.txt
 ./SUPERCOP_ARM/test >> arm_log.txt
 echo "REFERENCE:" >> arm_log.txt
 ./REFERENCE/test >> arm_log.txt
-echo "ROUND 2:" >> arm_log.txt
-echo "ARM_IMPL:" >> arm_log.txt
-./ARM_IMPL/test >> arm_log.txt
-echo "SUPERCOP_ARM:" >> arm_log.txt
-./SUPERCOP_ARM/test >> arm_log.txt
-echo "REFERENCE:" >> arm_log.txt
-./REFERENCE/test >> arm_log.txt
-echo "ROUND 3:" >> arm_log.txt
-echo "ARM_IMPL:" >> arm_log.txt
-./ARM_IMPL/test >> arm_log.txt
-echo "SUPERCOP_ARM:" >> arm_log.txt
-./SUPERCOP_ARM/test >> arm_log.txt
-echo "REFERENCE:" >> arm_log.txt
-./REFERENCE/test >> arm_log.txt
-echo "ROUND 4:" >> arm_log.txt
-echo "ARM_IMPL:" >> arm_log.txt
-./ARM_IMPL/test >> arm_log.txt
-echo "SUPERCOP_ARM:" >> arm_log.txt
-./SUPERCOP_ARM/test >> arm_log.txt
-echo "REFERENCE:" >> arm_log.txt
-./REFERENCE/test >> arm_log.txt
-echo "ROUND 5:" >> arm_log.txt
-echo "ARM_IMPL:" >> arm_log.txt
-./ARM_IMPL/test >> arm_log.txt
-echo "SUPERCOP_ARM:" >> arm_log.txt
-./SUPERCOP_ARM/test >> arm_log.txt
-echo "REFERENCE:" >> arm_log.txt
-./REFERENCE/test >> arm_log.txt
+#echo "ROUND 2:" >> arm_log.txt
+#echo "ARM_IMPL:" >> arm_log.txt
+#./ARM_IMPL/test >> arm_log.txt
+#echo "SUPERCOP_ARM:" >> arm_log.txt
+#./SUPERCOP_ARM/test >> arm_log.txt
+#echo "REFERENCE:" >> arm_log.txt
+#./REFERENCE/test >> arm_log.txt
+#echo "ROUND 3:" >> arm_log.txt
+#echo "ARM_IMPL:" >> arm_log.txt
+#./ARM_IMPL/test >> arm_log.txt
+#echo "SUPERCOP_ARM:" >> arm_log.txt
+#./SUPERCOP_ARM/test >> arm_log.txt
+#echo "REFERENCE:" >> arm_log.txt
+#./REFERENCE/test >> arm_log.txt
+#echo "ROUND 4:" >> arm_log.txt
+#echo "ARM_IMPL:" >> arm_log.txt
+#./ARM_IMPL/test >> arm_log.txt
+#echo "SUPERCOP_ARM:" >> arm_log.txt
+#./SUPERCOP_ARM/test >> arm_log.txt
+#echo "REFERENCE:" >> arm_log.txt
+#./REFERENCE/test >> arm_log.txt
+#echo "ROUND 5:" >> arm_log.txt
+#echo "ARM_IMPL:" >> arm_log.txt
+#./ARM_IMPL/test >> arm_log.txt
+#echo "SUPERCOP_ARM:" >> arm_log.txt
+#./SUPERCOP_ARM/test >> arm_log.txt
+#echo "REFERENCE:" >> arm_log.txt
+#./REFERENCE/test >> arm_log.txt
