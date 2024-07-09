@@ -141,6 +141,7 @@ char* byteToHex(uint8_t byte){
 }
 
 
+
 void testValidator() {
     
     const char* fileName = "../sha-3bytetestvectors/SHA3_512LongMsg.rsp";
@@ -154,10 +155,12 @@ void testValidator() {
     int len = 0;
     char expected_output[10000];
     uint8_t output[64];
+
+    int failed = 0;
+
     while (!feof(file)){
 
         longmsg(file, inputString, &len, expected_output);
-
 
         uint8_t input[len/8];
         for(int i = 0; i < len/8; i++){
@@ -170,18 +173,20 @@ void testValidator() {
         }
 
         sha3_512(output, input, len/8);
-        
+        char converted_output[10000] = {0};
 
-       
-        
-        memcmp(output, expected_output, 64) ? printf("SUCCESS\n") : printf("FAILURE\n");
-        printf("\n");
+        for(int i = 0; i < 64; i++) sprintf(converted_output + 2*i, "%02x", output[i]);
+
+        failed = (strncmp(converted_output, expected_output, 64) == 0 ? 0 : 1);
     }
+    if (failed) printf("FAILED\n");
+    else printf("PASSED\n");
 }
 
 
 int main () {
 
+    /*
     size_t len = 32768;
     uint8_t input[len/8];
     uint8_t output512[64], output384[48], output256[32];
@@ -237,6 +242,7 @@ int main () {
         printf("%x", output256[i]);
     }
     printf("\n");
-   //testValidator();
+    */
+   testValidator();
     return 0;
 }
