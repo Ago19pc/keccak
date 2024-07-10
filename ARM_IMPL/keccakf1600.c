@@ -42,7 +42,7 @@ void KeccakF1600_StateExtractBytes(keccak_state_t *state, unsigned char *data,
         memcpy(data, (uint8_t *)zero + offset, length);
 }
 /**
- * Vuole lo stato iniziale interlacciato. Ritorna il nuovo stato interlacciato. Vuole data NON interlacciato
+ * Vuole lo stato iniziale interlacciato (la extract lo sterlaccerà). Ritorna il nuovo stato interlacciato. Vuole data NON interlacciato
  */
 void KeccakF1600_StateXORBytes(keccak_state_t *state, const unsigned char *data,
                                unsigned int offset, unsigned int length)
@@ -96,7 +96,7 @@ void KeccakF1600_StateXORBytes(keccak_state_t *state, const unsigned char *data,
     state->a24 = stateWords[24];
 }
 
-void KeccakF1600_StatePermute(uint64_t * state){
+void KeccakF1600_StatePermute(uint64_t * state){ //come CROSS per non rallentare (tranne nel caricare e scaricare lo stato che è interlacciato
     ALIGN(32) uint64_t round_constants[24] = {
             0x0000000000000001,
             0x0000000000008082,
@@ -138,7 +138,7 @@ void KeccakF1600_StatePermute(uint64_t * state){
     uint64_t Ema, Eme, Emi, Emo, Emu;
     uint64_t Esa, Ese, Esi, Eso, Esu;
 
-    //copyFromState(A, state)
+    //carica lo stato sterlacciandolo
     Aba = state[ 0];
     Abe = state[ 2];
     Abi = state[ 4];
@@ -357,7 +357,7 @@ void KeccakF1600_StatePermute(uint64_t * state){
         Asu =   BCu ^((~BCa)&  BCe );
     }
 
-    //copyToState(state, A)
+    //salva lo stato interlacciandolo
     state[ 0] = Aba;
     state[ 2] = Abe;
     state[ 4] = Abi;

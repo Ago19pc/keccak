@@ -16,32 +16,32 @@ echo "AVX_IMPL:" >> x86_64_log.txt
 echo "SUPERCOP:" >> x86_64_log.txt
 ./SUPERCOP/test >> x86_64_log.txt
 echo "REFERENCE:" >> x86_64_log.txt
-#./REFERENCE/test >> x86_64_log.txt
+./REFERENCE/test >> x86_64_log.txt
 echo "ROUND 2:" >> x86_64_log.txt
 echo "AVX_IMPL:" >> x86_64_log.txt
 ./AVX_IMPL/test >> x86_64_log.txt
 echo "SUPERCOP:" >> x86_64_log.txt
 ./SUPERCOP/test >> x86_64_log.txt
 echo "REFERENCE:" >> x86_64_log.txt
-#./REFERENCE/test >> x86_64_log.txt
+./REFERENCE/test >> x86_64_log.txt
 echo "ROUND 3:" >> x86_64_log.txt
 echo "AVX_IMPL:" >> x86_64_log.txt
 ./AVX_IMPL/test >> x86_64_log.txt
 echo "SUPERCOP:" >> x86_64_log.txt
 ./SUPERCOP/test >> x86_64_log.txt
 echo "REFERENCE:" >> x86_64_log.txt
-#./REFERENCE/test >> x86_64_log.txt
+./REFERENCE/test >> x86_64_log.txt
 echo "ROUND 4:" >> x86_64_log.txt
 echo "AVX_IMPL:" >> x86_64_log.txt
 ./AVX_IMPL/test >> x86_64_log.txt
 echo "SUPERCOP:" >> x86_64_log.txt
 ./SUPERCOP/test >> x86_64_log.txt
 echo "REFERENCE:" >> x86_64_log.txt
-#./REFERENCE/test >> x86_64_log.txt
+./REFERENCE/test >> x86_64_log.txt
 echo "ROUND 5:" >> x86_64_log.txt
 echo "AVX_IMPL:" >> x86_64_log.txt
 ./AVX_IMPL/test >> x86_64_log.txt
 echo "SUPERCOP:" >> x86_64_log.txt
 ./SUPERCOP/test >> x86_64_log.txt
 echo "REFERENCE:" >> x86_64_log.txt
-#./REFERENCE/test >> x86_64_log.txt
+./REFERENCE/test >> x86_64_log.txt
