@@ -5,19 +5,20 @@
 
 void readPiece(FILE* file, char* input, int* len, char* result){
         char word[1000];
-        fscanf(file, "%s", word);
+        int read;
+        read = fscanf(file, "%s", word);
         if (strcmp(word, "Len") == 0){
-            fscanf(file, "%s", word);
-            fscanf(file, "%s", word);
+            read += fscanf(file, "%s", word);
+            read += fscanf(file, "%s", word);
             *len = atoi(word);
         } else if (strcmp(word, "Msg") == 0){
-            fscanf(file, "%s", word);
-            fscanf(file, "%s", input);
+            read += fscanf(file, "%s", word);
+            read += fscanf(file, "%s", input);
             
         } else if (strcmp(word, "MD") == 0){
-            fscanf(file, "%s", word);
-            fscanf(file, "%s", result);
-        } else printf("ERROR READING FILE\n");
+            read += fscanf(file, "%s", word);
+            read += fscanf(file, "%s", result);
+        } else printf("ERROR READING FILE. READ: %d\n", read);
     return;
 }
 

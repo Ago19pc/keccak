@@ -5,10 +5,6 @@
 #include "SHA3.c"
 
 
-#define logger 1
-#include "../Utils/logger.c"
-
-
 
 uint8_t hexToInt(char hex){
     switch(hex){

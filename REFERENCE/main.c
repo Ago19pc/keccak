@@ -6,9 +6,6 @@
 #include <stdlib.h>
 #include "../timing_and_stat.h"
 
-#define logger 1
-#include "../Utils/logger.c"
-
 
 
 uint8_t hexToInt(char hex){

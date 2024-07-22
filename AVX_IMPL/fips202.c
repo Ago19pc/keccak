@@ -56,26 +56,26 @@ static size_t keccak_absorb(keccak_state_t *state, uint32_t rate, const uint8_t 
                 a1 = _mm256_xor_si256(a1, _mm256_loadu_si256((const __m256i*)(currentDataWord+ 5)));
                 a2 = _mm256_xor_si256(a2, _mm256_loadu_si256((const __m256i*)(currentDataWord+ 10)));
                 a3 = _mm256_xor_si256(a3, _mm256_loadu_si256((const __m256i*)(currentDataWord+ 15)));
-                a4 = _mm256_xor_si256(a4, _mm256_maskload_epi64((const int64_t*)(currentDataWord+20), _mm256_setr_epi64x((uint64_t)1 << 63, (uint64_t)0, (uint64_t)0, (uint64_t)0)));
+                a4 = _mm256_xor_si256(a4, _mm256_maskload_epi64((const long long*)(currentDataWord+20), _mm256_setr_epi64x((uint64_t)1 << 63, (uint64_t)0, (uint64_t)0, (uint64_t)0)));
                 c4 = _mm256_xor_si256(c4, _mm256_setr_epi64x(currentDataWord[4], currentDataWord[9], currentDataWord[14], currentDataWord[19]));
                 break;
              case 17:
                 a0 = _mm256_xor_si256(a0, _mm256_loadu_si256((const __m256i*)currentDataWord));
                 a1 = _mm256_xor_si256(a1, _mm256_loadu_si256((const __m256i*)(currentDataWord+ 5)));
                 a2 = _mm256_xor_si256(a2, _mm256_loadu_si256((const __m256i*)(currentDataWord+ 10)));
-                a3 = _mm256_xor_si256(a3, _mm256_maskload_epi64((const int64_t*)(currentDataWord+ 15), _mm256_setr_epi64x((uint64_t)1 << 63, (uint64_t)1 << 63, (uint64_t)0, (uint64_t)0)));
+                a3 = _mm256_xor_si256(a3, _mm256_maskload_epi64((const long long*)(currentDataWord+ 15), _mm256_setr_epi64x((uint64_t)1 << 63, (uint64_t)1 << 63, (uint64_t)0, (uint64_t)0)));
                 c4 = _mm256_xor_si256(c4, _mm256_setr_epi64x(currentDataWord[4], currentDataWord[9], currentDataWord[14], 0));
                 break;
              case 13:
                 a0 = _mm256_xor_si256(a0, _mm256_loadu_si256((const __m256i*)currentDataWord));
                 a1 = _mm256_xor_si256(a1, _mm256_loadu_si256((const __m256i*)(currentDataWord+ 5)));
-                a2 = _mm256_xor_si256(a2, _mm256_maskload_epi64((const int64_t*)(currentDataWord+ 10), _mm256_setr_epi64x((uint64_t)1 << 63, (uint64_t)1 << 63, (uint64_t)1 << 63, (uint64_t)0)));
+                a2 = _mm256_xor_si256(a2, _mm256_maskload_epi64((const long long*)(currentDataWord+ 10), _mm256_setr_epi64x((uint64_t)1 << 63, (uint64_t)1 << 63, (uint64_t)1 << 63, (uint64_t)0)));
                 c4 = _mm256_xor_si256(c4, _mm256_setr_epi64x(currentDataWord[4], currentDataWord[9], 0, 0));
                 break;
              case 9:
                 a0 = _mm256_xor_si256(a0, _mm256_loadu_si256((const __m256i*)currentDataWord));
                 a1 = _mm256_xor_si256(a1, _mm256_loadu_si256((const __m256i*)(currentDataWord+ 5)));
-                c4 = _mm256_xor_si256(c4, _mm256_maskload_epi64((const int64_t*)(currentDataWord+ 4), _mm256_setr_epi64x((uint64_t)1 << 63, (uint64_t)0, (uint64_t)0, (uint64_t)0)));
+                c4 = _mm256_xor_si256(c4, _mm256_maskload_epi64((const long long*)(currentDataWord+ 4), _mm256_setr_epi64x((uint64_t)1 << 63, (uint64_t)0, (uint64_t)0, (uint64_t)0)));
                 break;
              default:
                 break;
