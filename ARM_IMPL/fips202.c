@@ -15,7 +15,7 @@ static size_t keccak_absorb(keccak_state_t *state, uint32_t rate, const uint8_t 
       KeccakF1600_StateXORBytes(state, input, 0, rate);
       inlen -= (size_t)(rate);
       input += rate;
-      KeccakF1600_StatePermute(state);
+      KeccakF1600_StatePermute((uint64_t*) state);
    }
    KeccakF1600_StateXORBytes(state, input, 0, inlen);
    return inlen;
@@ -37,7 +37,7 @@ static void keccak_squeeze(uint8_t *out, size_t outlen, keccak_state_t *state, u
 {
    size_t len = 0;
    while (outlen > 0) {
-       KeccakF1600_StatePermute(state);
+       KeccakF1600_StatePermute((uint64_t*)state);
        if (outlen < rate) {
            len = outlen;
        } else {
